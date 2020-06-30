@@ -252,7 +252,6 @@ public class PageHelper<T> {
     public PageHelper<T> paging(Class<T> tClazz, Select select, PagingService pageService) {
         try {
             Class<? extends PagingService> clazz = pageService.getClass();
-//            MethodAccess methodAccess = MethodAccess.get(clazz);
             Method selectMethod = null;
             Method countMethod = null;
             // 衍生一个对象用于select查询
@@ -265,11 +264,9 @@ public class PageHelper<T> {
             if (tClazz != null) {
                 countMethod = clazz.getDeclaredMethod(this.getPagingMethod().getCount(), Class.class, Select.class);
                 count = (long) countMethod.invoke(pageService, tClazz, select);
-//                count = (long) methodAccess.invoke(pageService, this.getPagingMethod().getCount(), tClazz, select);
             } else {
                 countMethod = clazz.getDeclaredMethod(this.getPagingMethod().getCount(), Select.class);
                 count = (long) countMethod.invoke(pageService, select);
-//                count = (long) methodAccess.invoke(pageService, this.getPagingMethod().getCount(), select);
             }
             // 计算共有几页
             this.dispose(count);
@@ -279,12 +276,10 @@ public class PageHelper<T> {
             Object obj;
             if (tClazz != null) {
                 selectMethod = clazz.getDeclaredMethod(this.getPagingMethod().getSelect(), Class.class, Select.class);
-                obj = selectMethod.invoke(pageService, tClazz, select);
-//                obj = methodAccess.invoke(pageService, this.getPagingMethod().getSelect(), tClazz, sqlBeanSelect);
+                obj = selectMethod.invoke(pageService, tClazz, sqlBeanSelect);
             } else {
                 selectMethod = clazz.getDeclaredMethod(this.getPagingMethod().getSelect(), Select.class);
-                obj = selectMethod.invoke(pageService, select);
-//                obj = methodAccess.invoke(pageService, this.getPagingMethod().getSelect(), sqlBeanSelect);
+                obj = selectMethod.invoke(pageService, sqlBeanSelect);
             }
             this.setDataList((List<T>) obj);
             Log.d("sqlbean", clazz.getName() + "获取分页数据成功");

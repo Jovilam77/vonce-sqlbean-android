@@ -88,7 +88,6 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
      */
     public Object beanHandleResultSet(Class<?> clazz, Cursor cursor) {
         List<String> columnNameList = Arrays.asList(cursor.getColumnNames());
-//        Object bean = ReflectAsmUtil.getInstance(clazz);
         Object bean = null;
         try {
             bean = clazz.newInstance();
@@ -108,7 +107,6 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
             if (sqlJoin != null) {
                 if (sqlJoin.isBean()) {
                     Class<?> subClazz = field.getType();
-//                    Object subBean = ReflectAsmUtil.getInstance(subClazz);
                     Object subBean = null;
                     try {
                         subBean = subClazz.newInstance();
@@ -136,7 +134,6 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
                         subFieldName = subTableAlias + SqlHelperCons.UNDERLINE + subFieldName;
                         setFieldValue(subBean, subField, subFieldName, cursor);
                     }
-//                    ReflectAsmUtil.set(bean.getClass(), bean, fieldName, subBean);
                     ReflectUtil.setFieldValue(bean, fieldName, subBean);
                     continue;
                 } else {
@@ -169,7 +166,6 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
         if (value == null || value.equals("null")) {
             value = getDefaultValue(field.getType().getName());
         }
-//            ReflectAsmUtil.set(obj.getClass(), obj, field.getName(), value);
         ReflectUtil.setFieldValue(obj, field.getName(), value);
     }
 
@@ -184,6 +180,9 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
     public Object getValue(String fieldType, String fieldName, Cursor cursor) {
         Object value = null;
         int index = cursor.getColumnIndex(fieldName);
+        if (index == -1) {
+            return null;
+        }
         switch (fieldType) {
             case "byte":
             case "java.lang.Byte":

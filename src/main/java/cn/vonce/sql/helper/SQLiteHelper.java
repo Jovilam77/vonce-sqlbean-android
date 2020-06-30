@@ -15,7 +15,7 @@ public class SQLiteHelper {
 
     private static SQLiteHelper defaultSqLiteHelper;
     private final static Map<String, SQLiteHelper> sqLiteHelperMap = new WeakHashMap<>();
-    private final Map<Class<?>, SqlBeanService> sqlBeanServiceImplMap = new WeakHashMap<>();
+    private final Map<Class<?>, SqlBeanServiceImpl> sqlBeanServiceImplMap = new WeakHashMap<>();
 
     private Context context;
     private String name;
@@ -78,13 +78,13 @@ public class SQLiteHelper {
      * @param clazz
      * @return
      */
-    public SqlBeanService get(Class<?> clazz) {
-        SqlBeanService sqlBeanService = sqlBeanServiceImplMap.get(clazz);
-        if (sqlBeanService == null) {
-            sqlBeanService = new SqlBeanServiceImpl(clazz, new DatabaseHelper(clazz, context, name, null, version));
-            sqlBeanServiceImplMap.put(clazz, sqlBeanService);
+    public SqlBeanServiceImpl get(Class<?> clazz) {
+        SqlBeanServiceImpl sqlBeanServiceImpl = sqlBeanServiceImplMap.get(clazz);
+        if (sqlBeanServiceImpl == null) {
+            sqlBeanServiceImpl = new SqlBeanServiceImpl(clazz, new DatabaseHelper(clazz, context, name, null, version));
+            sqlBeanServiceImplMap.put(clazz, sqlBeanServiceImpl);
         }
-        return sqlBeanService;
+        return sqlBeanServiceImpl;
     }
 
 }

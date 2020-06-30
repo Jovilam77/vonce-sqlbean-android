@@ -500,7 +500,6 @@ public class SqlBeanUtil {
             if (endIndex != -1) {
                 String name = conditionSql.substring(startIndex + prefix.length(), endIndex);
                 int nextIndex = endIndex + suffix.length();
-//                String value = getSqlValue(common, ReflectAsmUtil.get(bean.getClass(), bean, name));
                 String value = getSqlValue(common, ReflectUtil.getFieldValue(bean, name));
                 conditionSql.replace(startIndex, endIndex + suffix.length(), value);
                 nextIndex = startIndex + value.length();

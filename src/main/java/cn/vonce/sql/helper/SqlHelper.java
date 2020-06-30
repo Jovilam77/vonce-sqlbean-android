@@ -177,7 +177,7 @@ public class SqlHelper {
             sql = fieldAndValuesSql(insert, objects);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
         }
         return sql;
     }
@@ -505,7 +505,6 @@ public class SqlHelper {
                 }
                 //如果此字段为id且需要生成唯一id
                 if (sqlId != null && sqlId.generateType() != GenerateType.AUTO && sqlId.generateType() != GenerateType.NORMAL) {
-//                    Object value = ReflectAsmUtil.get(objects[i].getClass(), objects[i], field.getName());
                     Object value = ReflectUtil.getFieldValue(objects[i], field.getName());
                     if (StringUtil.isEmpty(value)) {
                         value = common.getSqlBeanConfig().getUniqueIdProcessor().uniqueId(sqlId.generateType());
@@ -514,7 +513,6 @@ public class SqlHelper {
                     valueSql.append(SqlHelperCons.COMMA);
                 } else {
                     valueSql.append(SqlBeanUtil.getSqlValue(common, ReflectUtil.getFieldValue(objects[i], field.getName())));
-//                    valueSql.append(SqlBeanUtil.getSqlValue(common, ReflectAsmUtil.get(objects[i].getClass(), objects[i], field.getName())));
                     valueSql.append(SqlHelperCons.COMMA);
                 }
             }
@@ -578,7 +576,6 @@ public class SqlHelper {
                 continue;
             }
             String name = SqlBeanUtil.getTableFieldName(fields[i]);
-//            Object objectValue = ReflectAsmUtil.get(bean.getClass(), bean, fields[i].getName());
             Object objectValue = ReflectUtil.getFieldValue(bean, fields[i].getName());
             if (update.isUpdateNotNull()) {
                 if (objectValue == null) {
@@ -595,7 +592,6 @@ public class SqlHelper {
         }
         for (int i = 0; i < filterAfterList.size(); i++) {
             String name = SqlBeanUtil.getTableFieldName(filterAfterList.get(i));
-//            Object objectValue = ReflectAsmUtil.get(bean.getClass(), bean, filterAfterList.get(i).getName());
             Object objectValue = ReflectUtil.getFieldValue(bean, filterAfterList.get(i).getName());
             setSql.append(transferred);
             setSql.append(SqlBeanUtil.isToUpperCase(update) ? name.toUpperCase() : name);
@@ -733,7 +729,6 @@ public class SqlHelper {
                 if (versionEffectiveness) {
                     versionConditionSql.append(SqlHelperCons.BEGIN_BRACKET);
                     versionConditionSql.append(SqlBeanUtil.getTableFieldName(versionField));
-//                    Object versionValue = ReflectAsmUtil.get(bean.getClass(), bean, versionField.getName());
                     Object versionValue = ReflectUtil.getFieldValue(bean, versionField.getName());
                     versionConditionSql.append(versionValue == null ? SqlHelperCons.IS : SqlHelperCons.EQUAL_TO);
                     versionConditionSql.append(SqlBeanUtil.getSqlValue(common, versionValue));
@@ -882,7 +877,7 @@ public class SqlHelper {
                     throw new SqlBeanException("between 条件的值必须为Array或ArrayList");
                 } catch (SqlBeanException e) {
                     e.printStackTrace();
-                    Log.e("sqlbean", e.getMessage());
+                    Log.e("sqlbean", e.getMessage(), e);
                     return null;
                 }
             }

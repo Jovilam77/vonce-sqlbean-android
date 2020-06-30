@@ -330,7 +330,6 @@ public class SqlBeanProvider {
         Field idField;
         try {
             idField = SqlBeanUtil.getIdField(bean.getClass());
-//            Object id = ReflectAsmUtil.get(bean.getClass(), bean, idField.getName());
             Object id = ReflectUtil.getFieldValue(bean, idField.getName());
             if (StringUtil.isEmpty(id)) {
                 try {
@@ -409,6 +408,31 @@ public class SqlBeanProvider {
     }
 
     /**
+     * 删除表
+     *
+     * @param sqlBeanConfig
+     * @param clazz
+     * @return
+     */
+    public String dropTableSql(SqlBeanConfig sqlBeanConfig, Class<?> clazz) {
+        return "DROP TABLE IF EXISTS " + SqlBeanUtil.getTable(clazz).getName();
+    }
+
+    /**
+     * 创建表
+     *
+     * @param sqlBeanConfig
+     * @param clazz
+     * @return
+     */
+    public String createTableSql(SqlBeanConfig sqlBeanConfig, Class<?> clazz) {
+        Create create = new Create();
+        create.setSqlBeanConfig(sqlBeanConfig);
+        create.setBeanClass(clazz);
+        return SqlHelper.buildCreateSql(create);
+    }
+
+    /**
      * 实例化Select
      *
      * @param clazz
@@ -467,7 +491,6 @@ public class SqlBeanProvider {
      * @throws IllegalAccessException
      */
     private Object newLogicallyDeleteBean(Class<?> clazz) throws SqlBeanException {
-//        Object bean = ReflectAsmUtil.getInstance(clazz);
         Object bean = null;
         try {
             bean = clazz.newInstance();
@@ -477,7 +500,6 @@ public class SqlBeanProvider {
             e.printStackTrace();
         }
         Field field = SqlBeanUtil.getLogicallyField(clazz);
-//        ReflectAsmUtil.set(clazz, bean, field.getName(), true);
         ReflectUtil.setFieldValue(bean, field.getName(), true);
         return bean;
     }

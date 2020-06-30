@@ -8,8 +8,10 @@ import cn.vonce.sql.bean.*;
 import cn.vonce.sql.config.SqlBeanConfig;
 import cn.vonce.sql.enumerate.DbType;
 import cn.vonce.sql.helper.SQLiteTemplate;
+import cn.vonce.sql.helper.SqlHelper;
 import cn.vonce.sql.orm.mapper.SqlBeanMapper;
 import cn.vonce.sql.orm.provider.SqlBeanProvider;
+import cn.vonce.sql.orm.service.TableService;
 import cn.vonce.sql.orm.service.SqlBeanService;
 import cn.vonce.sql.uitls.SqlBeanUtil;
 
@@ -34,7 +36,6 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
      */
     private static final long serialVersionUID = 1L;
 
-    private DatabaseHelper databaseHelper;
     private SQLiteTemplate sqliteTemplate;
 
     private final static SqlBeanConfig sqlBeanConfig = new SqlBeanConfig(DbType.SQLite);
@@ -68,6 +69,27 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     }
 
     @Override
+    public SQLiteTemplate getSQLiteTemplate() {
+        return sqliteTemplate;
+    }
+
+    @Override
+    public TableService getTableService() {
+        return new TableService() {
+            @Override
+            public long dropTable() {
+                return sqliteTemplate.update(SqlBeanServiceImpl.this.dropTableSql(sqlBeanConfig, clazz));
+            }
+
+            @Override
+            public long createTable() {
+                dropTable();
+                return sqliteTemplate.update(SqlBeanServiceImpl.this.createTableSql(sqlBeanConfig, clazz));
+            }
+        };
+    }
+
+    @Override
     public T selectById(ID id) {
         if (id == null) {
             return null;
@@ -76,7 +98,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectByIdSql(sqlBeanConfig, clazz, id),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -93,7 +115,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectByIdSql(sqlBeanConfig, clazz, id),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -107,7 +129,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
                     new SqlBeanMapper<List<T>>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -124,7 +146,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
                     new SqlBeanMapper<List<O>>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -136,7 +158,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectSql(sqlBeanConfig, clazz, select),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -151,7 +173,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectSql(sqlBeanConfig, clazz, select),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -162,7 +184,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectSql(sqlBeanConfig, clazz, select),
                     new SqlBeanMapper<Map<String, Object>>(clazz, Map.class));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -173,7 +195,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -187,7 +209,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.queryForObject(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -201,7 +223,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -215,7 +237,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, paging, where, args),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -226,7 +248,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -237,7 +259,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, paging, where, args),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -257,7 +279,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, null),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -268,7 +290,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, paging),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -282,7 +304,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, null),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -296,7 +318,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, paging),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -308,7 +330,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
                     new SqlBeanMapper<Map<String, Object>>(clazz, Map.class));
         } catch (
                 Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
 
@@ -323,7 +345,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectSql(sqlBeanConfig, clazz, select),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -334,7 +356,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return sqliteTemplate.query(super.selectSql(sqlBeanConfig, clazz, select),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
-            Log.e("sqlbean", e.getMessage());
+            Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
     }
@@ -443,4 +465,5 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     public long inset(Insert insert) {
         return sqliteTemplate.update(super.insertBeanSql(sqlBeanConfig, insert));
     }
+
 }

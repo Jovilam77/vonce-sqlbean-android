@@ -87,7 +87,6 @@ public class SQLiteTemplate {
             Method method = db.getClass().getDeclaredMethod("executeSql", String.class, Object[].class);
             method.setAccessible(true);
             result = (int) method.invoke(db, sql, null);
-            System.out.println("result：" + result);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
