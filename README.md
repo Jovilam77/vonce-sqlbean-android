@@ -5,7 +5,7 @@
 ###### 特点：零配置，连表查询，乐观锁，分页，自动建表
 ###### 环境：Android 4.0+
 
-###### 本插件由Java版移植而来，需要的移步这里👉 [vonce-sqlbean](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
+###### 本插件由Java版移植而来，后台版的Sqlbean请移步这里👉 [vonce-sqlbean](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
 
 #### 简单上手
 
