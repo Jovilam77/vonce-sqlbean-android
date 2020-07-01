@@ -9,8 +9,6 @@ import java.util.List;
 import android.util.Log;
 import cn.vonce.sql.bean.Create;
 import cn.vonce.sql.bean.Table;
-import cn.vonce.sql.config.SqlBeanConfig;
-import cn.vonce.sql.enumerate.DbType;
 import cn.vonce.sql.uitls.PackageUtil;
 import cn.vonce.sql.uitls.SqlBeanUtil;
 import cn.vonce.sql.uitls.StringUtil;
@@ -35,14 +33,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         List<String> classNames = PackageUtil.getClasses(context, clazz.getPackage().getName());
         try {
-            SqlBeanConfig sqlBeanConfig = new SqlBeanConfig(DbType.SQLite);
             Create create;
             for (String name : classNames) {
                 Table table = SqlBeanUtil.getTable(clazz);
                 if (StringUtil.isEmpty(table.getSchema()) || table.getSchema().equals(dbName)) {
                     Class<?> clazz = Class.forName(name);
                     create = new Create();
-                    create.setSqlBeanConfig(sqlBeanConfig);
                     create.setBeanClass(clazz);
                     String sql = SqlHelper.buildCreateSql(create);
                     db.execSQL(sql);
@@ -51,6 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            Log.i("sqlbean", e.getMessage(), e);
         }
     }
 

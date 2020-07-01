@@ -16,6 +16,7 @@
 
 ## SqlBeanConfig
 ```java
+    //可以不需要，已默认SQLite
     SqlBeanConfig sqlBeanConfig = new SqlBeanConfig();
     sqlBeanConfig.setDbType(DbType.SQLite);
 ```
@@ -24,7 +25,7 @@
 ```java
     private static void select1(SqlBeanConfig sqlBeanConfig) {
         Select select = new Select();
-        select.setSqlBeanConfig(sqlBeanConfig);
+        select.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         select.setColumn(SqlEssay._all);
         select.column(SqlUser.headPortrait, "头像");
         select.column(SqlUser.nickname, "昵称");
@@ -39,7 +40,7 @@
 
     private static void select2(SqlBeanConfig sqlBeanConfig) {
         Select select2 = new Select();
-        select2.setSqlBeanConfig(sqlBeanConfig);
+        select2.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         select2.column(SqlEssay.id, "序号")
                 .column(SqlEssay.content, "文章内容")
                 .column(SqlEssay.creationTime, "创建时间")
@@ -53,7 +54,7 @@
 
     private static void select3(SqlBeanConfig sqlBeanConfig) {
         Select select3 = new Select();
-        select3.setSqlBeanConfig(sqlBeanConfig);
+        select3.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         select3.column(SqlEssay._all, "count")
                 .column(SqlEssay.categoryId);
         select3.setTable(SqlEssay._tableName);
@@ -64,7 +65,7 @@
 
     private static void select4(SqlBeanConfig sqlBeanConfig) {
         Select select4 = new Select();
-        select4.setSqlBeanConfig(sqlBeanConfig);
+        select4.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         select4.setColumn(SqlUser._all);
         select4.setTable(SqlUser._tableName);
         Integer[] between = {2, 6};
@@ -83,7 +84,7 @@
 ```java
     private static void insert1(SqlBeanConfig sqlBeanConfig) {
         Insert insert = new Insert();
-        insert.setSqlBeanConfig(sqlBeanConfig);
+        insert.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         User user = new User();
         user.setId("10000");
         user.setUsername("10000");
@@ -97,7 +98,7 @@
 
     private static void insert2(SqlBeanConfig sqlBeanConfig) {
         Insert insert = new Insert();
-        insert.setSqlBeanConfig(sqlBeanConfig);
+        insert.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         List<User> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             User user = new User();
@@ -121,7 +122,7 @@
         user.setUsername("123");
         user.setGender(1);
         Update update = new Update();
-        update.setSqlBeanConfig(sqlBeanConfig);
+        update.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         update.setTable(User.class);
         update.setFilterFields("username");//java字段名
         update.setUpdateBean(user);
@@ -136,7 +137,7 @@
 ```java
     private static void delete(SqlBeanConfig sqlBeanConfig) {
         Delete delete = new Delete();
-        delete.setSqlBeanConfig(sqlBeanConfig);
+        delete.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         delete.where(SqlUser.id, 1, SqlOperator.GREATER_THAN);
         delete.wOR(SqlUser.nickname, "jovi");
         delete.setTable(User.class);
@@ -147,7 +148,7 @@
 ```java
     private static void delete(SqlBeanConfig sqlBeanConfig) {
         Create create = new Create();
-        create.setSqlBeanConfig(sqlBeanConfig);
+        create.setSqlBeanConfig(sqlBeanConfig);//可以不设置，已默认SQLite
         create.setBeanClass(clazz);
         System.out.println(SqlHelper.buildCreateSql(create));
     }
