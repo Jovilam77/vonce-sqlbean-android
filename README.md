@@ -114,12 +114,12 @@ public void update(){
 
 ##### ↓更多用法请查看下方文档↓
 
-#### [注解与用法（含ID生成、乐观锁、逻辑删除、连表查询）](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Annotation.md "注解与用法（含ID生成、乐观锁、逻辑删除、连表查询）")
-#### [内置Select相关方法](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Select.md "内置Select相关方法")
-#### [内置Insert相关方法](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Insert.md "内置Insert相关方法")
-#### [内置Delete相关方法](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Delete.md "内置Delete相关方法")
-#### [内置Update相关方法](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Update.md "内置Update相关方法")
-#### [Service接口和实现类](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Interface.md "Service接口和实现类")
-#### [SqlBean和SqlHelper](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/SqlHelper.md "SqlBean和SqlHelper")
-#### [Where条件和占位符](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Where.md "Where条件和占位符")
-#### [分页查询](https://github.com/Jovilam77/vonce-sqlbean/blob/develop/doc/Paging.md "分页查询")
+#### [注解与用法（含ID生成、乐观锁、逻辑删除、连表查询）](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Annotation.md "注解与用法（含ID生成、乐观锁、逻辑删除、连表查询）")
+#### [内置Select相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Select.md "内置Select相关方法")
+#### [内置Insert相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Insert.md "内置Insert相关方法")
+#### [内置Delete相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Delete.md "内置Delete相关方法")
+#### [内置Update相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Update.md "内置Update相关方法")
+#### [Service接口和实现类](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Interface.md "Service接口和实现类")
+#### [SqlBean和SqlHelper](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/SqlHelper.md "SqlBean和SqlHelper")
+#### [Where条件和占位符](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Where.md "Where条件和占位符")
+#### [分页查询](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Paging.md "分页查询")
