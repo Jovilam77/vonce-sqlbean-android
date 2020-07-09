@@ -8,7 +8,6 @@ import cn.vonce.sql.bean.*;
 import cn.vonce.sql.config.SqlBeanConfig;
 import cn.vonce.sql.enumerate.DbType;
 import cn.vonce.sql.helper.SQLiteTemplate;
-import cn.vonce.sql.helper.SqlHelper;
 import cn.vonce.sql.orm.mapper.SqlBeanMapper;
 import cn.vonce.sql.orm.provider.SqlBeanProvider;
 import cn.vonce.sql.orm.service.TableService;
@@ -37,6 +36,8 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     private static final long serialVersionUID = 1L;
 
     private SQLiteTemplate sqliteTemplate;
+
+    private TableService tableService;
 
     private final static SqlBeanConfig sqlBeanConfig = new SqlBeanConfig(DbType.SQLite);
 
@@ -75,18 +76,21 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
 
     @Override
     public TableService getTableService() {
-        return new TableService() {
-            @Override
-            public long dropTable() {
-                return sqliteTemplate.update(SqlBeanServiceImpl.this.dropTableSql(sqlBeanConfig, clazz));
-            }
+        if (tableService == null) {
+            tableService = new TableService() {
+                @Override
+                public long dropTable() {
+                    return sqliteTemplate.update(SqlBeanServiceImpl.this.dropTableSql(sqlBeanConfig, clazz));
+                }
 
-            @Override
-            public long createTable() {
-                dropTable();
-                return sqliteTemplate.update(SqlBeanServiceImpl.this.createTableSql(sqlBeanConfig, clazz));
-            }
-        };
+                @Override
+                public long createTable() {
+                    dropTable();
+                    return sqliteTemplate.update(SqlBeanServiceImpl.this.createTableSql(sqlBeanConfig, clazz));
+                }
+            };
+        }
+        return tableService;
     }
 
     @Override
