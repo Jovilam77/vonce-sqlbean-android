@@ -1,7 +1,5 @@
 package cn.vonce.sql.uitls;
 
-import android.os.Build;
-import android.os.SystemClock;
 import java.net.InetAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -205,7 +203,7 @@ public final class SnowflakeId18 {
      * @return timestamp 毫秒时间戳
      */
     private long timeGen() {
-        return clock ? SystemClock.currentThreadTimeMillis() : System.currentTimeMillis();
+        return clock ? SystemClock.INSTANCE.currentTimeMillis() : System.currentTimeMillis();
     }
 
     /**

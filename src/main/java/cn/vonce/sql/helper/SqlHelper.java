@@ -658,33 +658,17 @@ public class SqlHelper {
      */
     private static String groupByAndOrderBySql(String type, Select select) {
         StringBuffer groupByAndOrderBySql = new StringBuffer();
-        SqlField[] sqlField;
+        SqlField[]sqlFields;
         if (SqlHelperCons.ORDER_BY.equals(type)) {
-            sqlField = select.getOrderBy().toArray(new SqlField[]{});
+            sqlFields = select.getOrderBy().toArray(new SqlField[]{});
         } else {
-            sqlField = select.getGroupBy().toArray(new SqlField[]{});
+            sqlFields = select.getGroupBy().toArray(new SqlField[]{});
         }
-        String transferred = SqlBeanUtil.getTransferred(select);
-        if (sqlField != null && sqlField.length != 0) {
+        if (sqlFields != null && sqlFields.length != 0) {
             groupByAndOrderBySql.append(type);
-            for (int i = 0; i < sqlField.length; i++) {
-                SqlField orderBy = sqlField[i];
-                groupByAndOrderBySql.append(transferred);
-                String tableAlias;
-                if (StringUtil.isNotEmpty(orderBy.getTableAlias())) {
-                    tableAlias = orderBy.getTableAlias();
-                } else {
-                    tableAlias = select.getTable().getAlias();
-                }
-                String name = orderBy.getName();
-                if (SqlBeanUtil.isToUpperCase(select)) {
-                    tableAlias = tableAlias.toUpperCase();
-                    name = name.toUpperCase();
-                }
-                groupByAndOrderBySql.append(tableAlias);
-                groupByAndOrderBySql.append(transferred);
-                groupByAndOrderBySql.append(SqlHelperCons.POINT);
-                groupByAndOrderBySql.append(name);
+            for (int i = 0; i < sqlFields.length; i++) {
+                SqlField orderBy = sqlFields[i];
+                groupByAndOrderBySql.append(orderBy.getName());
                 if (SqlHelperCons.ORDER_BY.equals(type)) {
                     groupByAndOrderBySql.append(SqlHelperCons.SPACES);
                     groupByAndOrderBySql.append(select.getOrderBy().get(i).getSqlSort().name());
