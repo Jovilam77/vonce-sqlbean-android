@@ -697,7 +697,7 @@ public class SqlHelper {
      * @param whereMap
      * @return
      */
-    private static String conditionHandle(ConditionType conditionType, Common common, String where, Object[] args, Object bean, ListMultimap<String, SqlCondition> whereMap) {
+    private static String conditionHandle(ConditionType conditionType, Common common, String where, Object[] args, Object bean, ListMultimap<String, ConditionInfo> whereMap) {
         StringBuffer conditionSql = new StringBuffer();
         StringBuffer versionConditionSql = null;
         Field versionField = null;
@@ -744,17 +744,17 @@ public class SqlHelper {
                 conditionSql.append(SqlHelperCons.BEGIN_BRACKET);
                 int i = 0;
                 // 遍历所有条件
-                Collection<Map.Entry<String, SqlCondition>> sqlConditionEntryCollection = whereMap.entries();
-                for (Map.Entry<String, SqlCondition> sqlConditionEntry : sqlConditionEntryCollection) {
-                    SqlCondition sqlCondition = sqlConditionEntry.getValue();
+                Collection<Map.Entry<String, ConditionInfo>> sqlConditionEntryCollection = whereMap.entries();
+                for (Map.Entry<String, ConditionInfo> sqlConditionEntry : sqlConditionEntryCollection) {
+                    ConditionInfo conditionInfo = sqlConditionEntry.getValue();
                     // 遍历sql逻辑处理
                     if (i != 0 && i < sqlConditionEntryCollection.size()) {
-                        conditionSql.append(getLogic(sqlCondition.getSqlLogic()));
+                        conditionSql.append(getLogic(conditionInfo.getSqlLogic()));
                     }
                     if (SqlBeanUtil.isToUpperCase(common)) {
-                        sqlCondition.setName(sqlCondition.getName().toUpperCase());
+                        conditionInfo.setName(conditionInfo.getName().toUpperCase());
                     }
-                    conditionSql.append(valueOperator(common, sqlCondition));
+                    conditionSql.append(valueOperator(common, conditionInfo));
                     i++;
                 }
                 conditionSql.append(SqlHelperCons.END_BRACKET);
@@ -769,14 +769,14 @@ public class SqlHelper {
     /**
      * 获取操作符
      *
-     * @param sqlCondition
+     * @param conditionInfo
      * @return
      */
-    private static String getOperator(SqlCondition sqlCondition) {
+    private static String getOperator(ConditionInfo conditionInfo) {
         String operator = "";
         // 优先使用枚举类型的操作符
-        if (sqlCondition.getSqlOperator() != null) {
-            SqlOperator sqlOperator = sqlCondition.getSqlOperator();
+        if (conditionInfo.getSqlOperator() != null) {
+            SqlOperator sqlOperator = conditionInfo.getSqlOperator();
             if (sqlOperator == SqlOperator.IS) {
                 operator = SqlHelperCons.IS;
             } else if (sqlOperator == SqlOperator.IS_NOT) {
@@ -843,18 +843,18 @@ public class SqlHelper {
      * 值操作
      *
      * @param common
-     * @param sqlCondition
+     * @param conditionInfo
      * @return
      */
-    private static StringBuffer valueOperator(Common common, SqlCondition sqlCondition) {
+    private static StringBuffer valueOperator(Common common, ConditionInfo conditionInfo) {
         StringBuffer sql = new StringBuffer();
-        String operator = getOperator(sqlCondition);
+        String operator = getOperator(conditionInfo);
         String transferred = SqlBeanUtil.getTransferred(common);
         boolean needEndBracket = false;
         Object[] betweenValues = null;
-        Object value = sqlCondition.getValue();
+        Object value = conditionInfo.getValue();
         // 如果操作符为BETWEEN ，IN、NOT IN 则需额外处理
-        if (sqlCondition.getSqlOperator() == SqlOperator.BETWEEN) {
+        if (conditionInfo.getSqlOperator() == SqlOperator.BETWEEN) {
             betweenValues = getObjects(value);
             if (betweenValues == null) {
                 try {
@@ -865,7 +865,7 @@ public class SqlHelper {
                     return null;
                 }
             }
-        } else if (sqlCondition.getSqlOperator() == SqlOperator.IN || sqlCondition.getSqlOperator() == SqlOperator.NOT_IN) {
+        } else if (conditionInfo.getSqlOperator() == SqlOperator.IN || conditionInfo.getSqlOperator() == SqlOperator.NOT_IN) {
             needEndBracket = true;
             Object[] in_notInValues = getObjects(value);
             if (in_notInValues == null) {
@@ -886,41 +886,41 @@ public class SqlHelper {
                 value = in_notIn.toString();
             }
         } else {
-            value = sqlCondition.getValue();
+            value = conditionInfo.getValue();
             //对like操作符处理
             if (operator.indexOf(SqlHelperCons.LIKE) > -1) {
-                if (sqlCondition.getSqlOperator() == SqlOperator.LIKE || sqlCondition.getSqlOperator() == SqlOperator.LIKE_L || sqlCondition.getSqlOperator() == SqlOperator.NOT_LIKE || sqlCondition.getSqlOperator() == SqlOperator.NOT_LIKE_L) {
+                if (conditionInfo.getSqlOperator() == SqlOperator.LIKE || conditionInfo.getSqlOperator() == SqlOperator.LIKE_L || conditionInfo.getSqlOperator() == SqlOperator.NOT_LIKE || conditionInfo.getSqlOperator() == SqlOperator.NOT_LIKE_L) {
                     value = SqlHelperCons.PERCENT + value;
                 }
-                if (sqlCondition.getSqlOperator() == SqlOperator.LIKE || sqlCondition.getSqlOperator() == SqlOperator.LIKE_R || sqlCondition.getSqlOperator() == SqlOperator.NOT_LIKE || sqlCondition.getSqlOperator() == SqlOperator.NOT_LIKE_R) {
+                if (conditionInfo.getSqlOperator() == SqlOperator.LIKE || conditionInfo.getSqlOperator() == SqlOperator.LIKE_R || conditionInfo.getSqlOperator() == SqlOperator.NOT_LIKE || conditionInfo.getSqlOperator() == SqlOperator.NOT_LIKE_R) {
                     value = value + SqlHelperCons.PERCENT;
                 }
                 value = SqlHelperCons.SINGLE_QUOTATION_MARK + value + SqlHelperCons.SINGLE_QUOTATION_MARK;
             } else if (value instanceof Original) {
-                Original original = (Original) sqlCondition.getValue();
+                Original original = (Original) conditionInfo.getValue();
                 value = original.getValue();
             } else {
                 value = SqlBeanUtil.getSqlValue(common, value);
             }
         }
         //schema
-        if (StringUtil.isNotEmpty(sqlCondition.getSchema())) {
-            sql.append(sqlCondition.getSchema());
+        if (StringUtil.isNotEmpty(conditionInfo.getSchema())) {
+            sql.append(conditionInfo.getSchema());
             sql.append(SqlHelperCons.POINT);
         }
         //表别名
-        if (StringUtil.isNotEmpty(sqlCondition.getTableAlias())) {
+        if (StringUtil.isNotEmpty(conditionInfo.getTableAlias())) {
             sql.append(transferred);
-            sql.append(sqlCondition.getTableAlias());
+            sql.append(conditionInfo.getTableAlias());
             sql.append(transferred);
             sql.append(SqlHelperCons.POINT);
         }
         //字段名
-        sql.append(sqlCondition.getName());
+        sql.append(conditionInfo.getName());
         //操作符
         sql.append(operator);
         //值
-        if (sqlCondition.getSqlOperator() == SqlOperator.BETWEEN) {
+        if (conditionInfo.getSqlOperator() == SqlOperator.BETWEEN) {
             sql.append(SqlBeanUtil.getSqlValue(common, betweenValues[0]));
             sql.append(SqlHelperCons.AND);
             sql.append(SqlBeanUtil.getSqlValue(common, betweenValues[1]));

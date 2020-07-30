@@ -106,7 +106,7 @@ public void update(){
 	
 	Essay essay1 = new Essay();
 	essay1.setContent("测试 update");
-	sqlBeanService.updateById(updateEssay, "10", " true);
+	sqlBeanService.updateById(updateEssay, "10", true);
 	//更多请查看文档
 }
 ```

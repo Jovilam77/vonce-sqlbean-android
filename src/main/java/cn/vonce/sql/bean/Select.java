@@ -32,7 +32,7 @@ public class Select extends SpecialCondition implements Serializable {
     private Page page = null;
     private String having = null;
     private Object[] havingArgs = null;
-    private ListMultimap<String, SqlCondition> havingMap = LinkedListMultimap.create();//having条件包含的逻辑
+    private ListMultimap<String, ConditionInfo> havingMap = LinkedListMultimap.create();//having条件包含的逻辑
     private String[] filterFields = null;//需要过滤的列字段
 
     /**
@@ -298,7 +298,7 @@ public class Select extends SpecialCondition implements Serializable {
      *
      * @return
      */
-    public ListMultimap<String, SqlCondition> getHavingMap() {
+    public ListMultimap<String, ConditionInfo> getHavingMap() {
         return havingMap;
     }
 
@@ -485,7 +485,7 @@ public class Select extends SpecialCondition implements Serializable {
      * @return
      */
     public Select having(SqlLogic sqlLogic, String schema, String tableAlias, String field, Object value, SqlOperator sqlOperator) {
-        havingMap.put(tableAlias + field, new SqlCondition(sqlLogic, schema, tableAlias, field, value, sqlOperator));
+        havingMap.put(tableAlias + field, new ConditionInfo(sqlLogic, schema, tableAlias, field, value, sqlOperator));
         return this;
     }
 

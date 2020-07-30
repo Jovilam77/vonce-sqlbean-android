@@ -2,12 +2,7 @@ package cn.vonce.sql.processor;
 
 import cn.vonce.sql.annotation.SqlColumn;
 import cn.vonce.sql.annotation.SqlTable;
-import cn.vonce.sql.bean.Column;
 import cn.vonce.sql.uitls.StringUtil;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -16,6 +11,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 import java.io.*;
 import java.util.Set;
 
@@ -27,7 +23,7 @@ import java.util.Set;
  * @email imjovi@qq.com
  * @date 2020/2/26 14:21
  */
-@SupportedAnnotationTypes({"cn.vonce.sql.annotation.SqlConstant"})
+@SupportedAnnotationTypes({"cn.vonce.sql.annotation.SqlTable"})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class SqlConstantProcessor extends AbstractProcessor {
     private Messager messager; //有点像Logger,用于输出信息
@@ -47,68 +43,52 @@ public class SqlConstantProcessor extends AbstractProcessor {
         try {
             for (TypeElement typeElement : annotations) {
                 for (Element element : env.getElementsAnnotatedWith(typeElement)) {
+                    SqlTable sqlTable = element.getAnnotation(SqlTable.class);
+                    if (!sqlTable.generate()) {
+                        continue;
+                    }
                     Element enclosingElement = element.getEnclosingElement();
                     //获取父元素的全类名,用来生成包名
                     String packageName = ((PackageElement) enclosingElement).getQualifiedName().toString() + ".sql";
                     String className = PREFIX + element.getSimpleName();
-                    String schema = "";
-                    String tableName = element.getSimpleName().toString();
-                    String tableAlias = "";
-                    SqlTable sqlTable = element.getAnnotation(SqlTable.class);
-                    if (sqlTable != null) {
-                        schema = sqlTable.schema();
-                        tableName = sqlTable.value();
-                        tableAlias = sqlTable.alias();
-                    }
+                    String schema = sqlTable.schema();
+                    String tableName = sqlTable.value();
+                    String tableAlias = sqlTable.alias();
                     if (StringUtil.isEmpty(tableAlias)) {
                         tableAlias = tableName;
                     }
-                    FieldSpec _schemaField = FieldSpec.builder(String.class, "_schema")
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("$S", schema)
-                            .build();
-                    FieldSpec _tableNameField = FieldSpec.builder(String.class, "_tableName")
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("$S", tableName)
-                            .build();
-                    FieldSpec _tableAliasField = FieldSpec.builder(String.class, "_tableAlias")
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("$S", tableAlias)
-                            .build();
-                    FieldSpec _allField = FieldSpec.builder(String.class, "_all")
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("$S", tableAlias + ".*")
-                            .build();
-                    FieldSpec _countField = FieldSpec.builder(String.class, "_count")
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .initializer("$S", "COUNT(*)")
-                            .build();
-                    TypeSpec.Builder sqlBeanConsBuilder = TypeSpec.classBuilder(className)
-                            .addModifiers(Modifier.PUBLIC)
-                            .addField(_schemaField)
-                            .addField(_tableNameField)
-                            .addField(_tableAliasField)
-                            .addField(_allField)
-                            .addField(_countField);
-                    for (Element subElement : element.getEnclosedElements()) {
-                        if (subElement.getKind().isField() && !subElement.getModifiers().contains(Modifier.STATIC)) {
-                            String sqlFieldName = subElement.getSimpleName().toString();
-                            SqlColumn sqlColumn = subElement.getAnnotation(SqlColumn.class);
-                            if (sqlColumn != null && StringUtil.isNotEmpty(sqlColumn.value())) {
-                                sqlFieldName = sqlColumn.value();
-                            }
-                            FieldSpec sqlField = FieldSpec.builder(Column.class, sqlFieldName)
-                                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                                    .initializer(CodeBlock.builder().add("new $T($L,$L,$S,\"\")", Column.class, "_schema", "_tableAlias", sqlFieldName).build())
-                                    .build();
-                            sqlBeanConsBuilder.addField(sqlField);
-                        }
-                    }
-                    JavaFile javaFile = JavaFile.builder(packageName, sqlBeanConsBuilder.build())
-                            .addFileComment(" This codes are generated automatically. Do not modify!")
-                            .build();
                     try {
-                        javaFile.writeTo(filer);
+                        StringBuffer code = new StringBuffer();
+                        code.append("/** The code is generated by the sqlbean. */\n\n");
+                        code.append(String.format("package %s;\n\n", packageName));
+                        code.append("import cn.vonce.sql.bean.Column;\n\n");
+                        code.append(String.format("public class %s {\n\n", className));
+                        code.append(String.format("\t\tpublic static final String _schema = \"%s\";\n", schema));
+                        code.append(String.format("\t\tpublic static final String _tableName = \"%s\";\n", tableName));
+                        code.append(String.format("\t\tpublic static final String _tableAlias = \"%s\";\n", tableAlias));
+                        code.append(String.format("\t\tpublic static final String _all = \"%s.*\";\n", tableAlias));
+                        code.append("\t\tpublic static final String _count = \"COUNT(*)\";\n");
+
+                        for (Element subElement : element.getEnclosedElements()) {
+                            if (subElement.getKind().isField() && !subElement.getModifiers().contains(Modifier.STATIC)) {
+                                String sqlFieldName = subElement.getSimpleName().toString();
+                                SqlColumn sqlColumn = subElement.getAnnotation(SqlColumn.class);
+                                if (sqlColumn != null && StringUtil.isNotEmpty(sqlColumn.value())) {
+                                    sqlFieldName = sqlColumn.value();
+                                }
+                                code.append(String.format("\t\tpublic static final Column %s = new Column(_schema,_tableAlias,\"%s\",\"\");\n", sqlFieldName, sqlFieldName));
+                            }
+                        }
+
+                        code.append("\n}");
+
+                        JavaFileObject fileObject = processingEnv.getFiler().createSourceFile(
+                                packageName + "." + className, enclosingElement);
+                        Writer writer = fileObject.openWriter();
+                        //写入java代码
+                        writer.write(code.toString());
+                        writer.flush();
+                        writer.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -21,9 +21,6 @@ public class Common implements Serializable {
     private SqlBeanConfig sqlBeanConfig = null;
 
     public SqlBeanConfig getSqlBeanConfig() {
-        if (sqlBeanConfig == null) {
-            sqlBeanConfig = new SqlBeanConfig(DbType.SQLite);
-        }
         return sqlBeanConfig;
     }
 

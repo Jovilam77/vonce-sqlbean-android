@@ -17,6 +17,13 @@ import java.lang.annotation.*;
 public @interface SqlTable {
 
     /**
+     * 生成实体类生成对应表的字段常量
+     *
+     * @return
+     */
+    boolean generate() default true;
+
+    /**
      * 表名
      *
      * @return
