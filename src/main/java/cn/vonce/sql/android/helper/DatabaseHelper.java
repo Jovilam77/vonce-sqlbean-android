@@ -1,4 +1,4 @@
-package cn.vonce.sql.helper;
+package cn.vonce.sql.android.helper;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,9 +7,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.List;
 
 import android.util.Log;
+import cn.vonce.sql.android.util.PackageUtil;
 import cn.vonce.sql.bean.Create;
 import cn.vonce.sql.bean.Table;
-import cn.vonce.sql.uitls.PackageUtil;
+import cn.vonce.sql.helper.SqlHelper;
 import cn.vonce.sql.uitls.SqlBeanUtil;
 import cn.vonce.sql.uitls.StringUtil;
 
