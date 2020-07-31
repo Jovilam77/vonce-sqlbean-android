@@ -5,13 +5,14 @@
 ###### 特点：零配置，连表查询，乐观锁，分页，自动建表
 ###### 环境：Android 4.0+
 
-###### 本插件由Java版移植而来，后台版的Sqlbean请移步这里👉 [vonce-sqlbean](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
+###### Java后台版的Sqlbean请移步这里👉 [vonce-sqlbean](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
 
 #### 简单上手
 
 
 ###### 1：引入Gradle依赖
-	implementation group: 'cn.vonce', name: 'vonce-sqlbean-android', version: '0.9.1'
+	implementation 'cn.vonce:vonce-sqlbean-android:0.9.2.BATE'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:0.9.2.BATE'
 ###### 2：标注实体类，实体类与表字段映射
 
 ```java
