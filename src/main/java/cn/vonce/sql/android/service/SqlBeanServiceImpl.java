@@ -72,22 +72,8 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     }
 
     @Override
-    public TableService getTableService() {
-        if (tableService == null) {
-            tableService = new TableService() {
-                @Override
-                public long dropTable() {
-                    return sqliteTemplate.update(SqlBeanServiceImpl.this.dropTableSql(sqlBeanConfig, clazz));
-                }
-
-                @Override
-                public long createTable() {
-                    dropTable();
-                    return sqliteTemplate.update(SqlBeanServiceImpl.this.createTableSql(sqlBeanConfig, clazz));
-                }
-            };
-        }
-        return tableService;
+    public Class<?> getBeanClass() {
+        return clazz;
     }
 
     @Override
@@ -127,8 +113,8 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return null;
         }
         try {
-            return sqliteTemplate.queryForObject(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
-                    new SqlBeanMapper<List<T>>(clazz, clazz));
+            return sqliteTemplate.query(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
+                    new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
             return null;
@@ -144,8 +130,8 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.queryForObject(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
-                    new SqlBeanMapper<List<O>>(clazz, returnType));
+            return sqliteTemplate.query(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
+                    new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
             return null;
@@ -465,6 +451,36 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     @Override
     public long inset(Insert insert) {
         return sqliteTemplate.update(super.insertBeanSql(sqlBeanConfig, insert));
+    }
+
+    @Override
+    public TableService getTableService() {
+        if (tableService == null) {
+            tableService = new TableService() {
+                @Override
+                public void dropTable() {
+                    sqliteTemplate.execSQL(SqlBeanServiceImpl.this.dropTableSql(clazz));
+                }
+
+                @Override
+                public void createTable() {
+                    dropTable();
+                    sqliteTemplate.execSQL(SqlBeanServiceImpl.this.createTableSql(sqlBeanConfig, clazz));
+                }
+
+                @Override
+                public void dropAndCreateTable() {
+                    dropTable();
+                    createTable();
+                }
+
+                @Override
+                public List<String> getTableList() {
+                    return sqliteTemplate.query(SqlBeanServiceImpl.this.selectTableListSql(sqlBeanConfig), new SqlBeanMapper<String>(clazz, String.class));
+                }
+            };
+        }
+        return tableService;
     }
 
 }
