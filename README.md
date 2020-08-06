@@ -2,17 +2,17 @@
 #### 介绍
 ###### 这是一款使用Java面向对象思想来编写并生成Sql语句的工具，并在此基础上对Android实现了轻量化的SQLite插件支持。插件中内置大量常用Sql执行的方法，目的是为了提高开发效率，减少大量的Sql语句编写，让开发者更专注于业务代码的编写。
 
-###### 特点：零配置，连表查询，乐观锁，分页，自动建表
+###### 特点：零配置，自动建表，连表查询，乐观锁，分页
 ###### 环境：Android 4.0+
 
-###### Java后台版的Sqlbean请移步这里👉 [vonce-sqlbean](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
+###### Sqlbean-Core与Java-Spring版请移步这里👉 [vonce-sqlbean](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
 
 #### 简单上手
 
 
 ###### 1：引入Gradle依赖
-	implementation 'cn.vonce:vonce-sqlbean-android:0.9.2.BATE'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:0.9.2.BATE'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.0.0'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.0'
 ###### 2：标注实体类，实体类与表字段映射
 
 ```java

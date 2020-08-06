@@ -2,25 +2,37 @@
 #### 方法和示例
 ###### 1：删除表结构
 ```java
-long dropTable();
+void dropTable();
 ```
 ```java
-public RS dropTable() {
-	long i = sqlBeanService.getTableService().dropTable();
-	if(i > 0){
-		//删除成功
-	}
+public void dropTable() {
+	sqlBeanService.getTableService().dropTable();
 }
 ```
 ###### 2：创建表结构
 ```java
-long createTable();
+void createTable();
 ```
 ```java
-public RS createTable() {
-	long i = sqlBeanService.getTableService().createTable();
-	if(i > 0){
-		//创建成功
-	}
+public void createTable() {
+	sqlBeanService.getTableService().createTable();
+}
+```
+###### 3：删除并创建表结构
+```java
+void dropAndCreateTable();
+```
+```java
+public void dropAndCreateTable() {
+	sqlBeanService.getTableService().dropAndCreateTable();
+}
+```
+###### 4：获取表名列表
+```java
+List<String> getTableList();
+```
+```java
+public void getTableList() {
+	List<String> list = sqlBeanService.getTableService().createTable();
 }
 ```

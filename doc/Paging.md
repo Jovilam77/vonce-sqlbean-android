@@ -15,7 +15,7 @@ private String timestamp;
 #### 方法一
 ##### 返回分页数据包含页数总数信息
 ```java
-public PagingRS getList(int pagenum,int pagesize) {
+public ResultData<List<Essay>> getList(int pagenum,int pagesize) {
 	Select select = new Select();// 查询对象（具体用法去看Select）
 	select.where("id", 1, SqlOperator.GREATER_THAN);//条件
 	select.wAND("id", 10, SqlOperator.LESS_THAN);//条件
@@ -24,13 +24,13 @@ public PagingRS getList(int pagenum,int pagesize) {
 	pageHelper.paging(select, sqlBeanService);//分页查询
 	//如果你要联表查询请使用下面这个（具体请看联表查询注解那里）
 	//pageHelper.paging(EssayUnion.class, select, sqlBeanService);
-	return pageHelper.toResult("获取文章列表成功");//返回结果
+	return pageHelper.getResultData("获取文章列表成功");//返回结果
 }
 ```
 #### 方法二
 ##### 返回分页数据包含页数总数信息
 ```java
-public PagingRS getList(int pagenum,int pagesize) {
+public ResultData<List<Essay>> getList(int pagenum,int pagesize) {
 	PageHelper<Essay> pageHelper = new PageHelper<>(pagenum, pagesize, null);
 	pageHelper.dispose(sqlBeanService.countAll());
 	pageHelper.setDataList(sqlBeanService.selectAll(pageHelper.getPaging()));
@@ -39,7 +39,7 @@ public PagingRS getList(int pagenum,int pagesize) {
 	//Object[] args = new Object[]{1, 10, "军事"};
 	//pageHelper.dispose(sqlBeanService.selectCountByCondition(sql, args));
 	//pageHelper.setDataList(sqlBeanService.selectByCondition(pageHelper.getPaging(), sql, args));
-	return pageHelper.toResult("获取文章列表成功");
+	return pageHelper.getResultData("获取文章列表成功");
 }
 ```
 #### 方法三
