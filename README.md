@@ -5,14 +5,14 @@
 ###### 特点：零配置，自动建表，连表查询，乐观锁，分页
 ###### 环境：Android 4.0+
 
-###### Sqlbean-Core与Java-Spring版请移步这里👉 [vonce-sqlbean](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
+###### Sqlbean-Core与Java-Spring版请移步这里👉 [gitee](https://gitee.com/iJovi/vonce-sqlbean "vonce-sqlbean")， [github](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
 
 #### 简单上手
 
 
 ###### 1：引入Gradle依赖
-	implementation 'cn.vonce:vonce-sqlbean-android:1.0.0'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.0'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.0.1'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.1'
 ###### 2：标注实体类，实体类与表字段映射
 
 ```java
@@ -38,8 +38,8 @@ public class Essay {
 ```
 ###### 3：获取连接（建议在上一步把所有表字段关系建立好，第一次获取连接时会自动创建表结构）
 ```java
-    private SqlBeanService<Essay, String> sqlBeanService;
-	//private SqlBeanService<Essay, String> sqlBeanService2;
+    private SqlBeanService<Essay, String> essayService;
+	//private SqlBeanService<User, String> userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +48,11 @@ public class Essay {
 
         //方式一，单库模式
         SQLiteHelper.init(this, "testdb", 1);//建议放在MainActivity或继承的Application
-        sqlBeanService = SQLiteHelper.db().get(Essay.class);
+        essayService = SQLiteHelper.db().get(Essay.class);
 
         //方式二，多库模式
-//        sqlBeanService = SQLiteHelper.db(this, "testdb1", 1).get(Essay.class);
-//        sqlBeanService2 = SQLiteHelper.db(this, "testdb2", 1).get(Essay.class);
+//        essayService = SQLiteHelper.db(this, "testdb1", 1).get(Essay.class);
+//        userService = SQLiteHelper.db(this, "testdb2", 1).get(User.class);
 
     }
 }
@@ -61,17 +61,17 @@ public class Essay {
 ```java
 //查询
 public void select(){
-	Essay essay = sqlBeanService.selectById("20");
-	List<Essay> essayList = ssqlBeanService.selectByCondition("id > ?", 10);
-	Essay essay1 = ssqlBeanService.selectOneByCondition("id = ?", 10);
-	List<Essay> essayList1 = sqlBeanService.selectAll(new Paging(0, 10));
+	Essay essay = essayService.selectById("20");
+	List<Essay> essayList = essayService.selectByCondition("& > ?",SqlEssay.id, 10);//SqlEssay.id常量是自动生成
+	Essay essay1 = essayService.selectOneByCondition("id = ?", 10);//也可以直接写sql字段
+	List<Essay> essayList1 = essayService.selectAll(new Paging(0, 10));
 	//多达24个查询方法，具体请查看文档
 }
 
 //删除
 public void delete(){
-	sqlBeanService.deleteById("3", "4");
-	sqlBeanService.deleteByCondition("id > ?", 10);
+	essayService.deleteById("3", "4");
+	essayService.deleteByCondition("& > ?",SqlEssay.id , 10);
 	//更多请查看文档
 }
 
@@ -83,7 +83,7 @@ public void insert(){
 	essay.setContent("content" + i);
 	essay.setUserId("userId" + i);
 	essay.setCreationTime(date);
-	sqlBeanService.insert(essay);
+	essayService.insert(essay);
 	
 	Essay essay1;
     List<Essay> essayList = new ArrayList<>();
@@ -95,7 +95,7 @@ public void insert(){
         essay1.setCreationTime(date);
         essayList.add(essay1);
     }
-    sqlBeanService.insert(essayList);
+    essayService.insert(essayList);
 }
 
 //更新
@@ -103,11 +103,11 @@ public void update(){
     Essay essay = new Essay();
     essay.setId("2");
     essay.setContent("测试 update");
-    sqlBeanService.updateByBeanId(updateEssay, true);
+    essayService.updateByBeanId(updateEssay, true);
 	
 	Essay essay1 = new Essay();
 	essay1.setContent("测试 update");
-	sqlBeanService.updateById(updateEssay, "10", true);
+	essayService.updateById(updateEssay, "10", true);
 	//更多请查看文档
 }
 ```

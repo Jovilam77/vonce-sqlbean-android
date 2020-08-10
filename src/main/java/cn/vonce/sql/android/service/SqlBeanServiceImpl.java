@@ -464,7 +464,6 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
 
                 @Override
                 public void createTable() {
-                    dropTable();
                     sqliteTemplate.execSQL(SqlBeanServiceImpl.this.createTableSql(sqlBeanConfig, clazz));
                 }
 
