@@ -12,6 +12,7 @@ import static android.os.Build.VERSION.SDK_INT;
 
 /**
  * SQLite 执行sql模板
+ * @author Jovi
  */
 public class SQLiteTemplate {
 

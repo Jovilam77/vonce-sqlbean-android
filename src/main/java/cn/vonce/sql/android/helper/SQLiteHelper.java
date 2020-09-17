@@ -9,6 +9,8 @@ import java.util.WeakHashMap;
 
 /**
  * 数据库连接助手
+ *
+ * @author Jovi
  */
 public class SQLiteHelper {
 
@@ -19,6 +21,7 @@ public class SQLiteHelper {
     private Context context;
     private String name;
     private int version;
+    private DatabaseHelper databaseHelper;
 
     private SQLiteHelper(Context context, String name, int version) {
         this.context = context;
@@ -54,8 +57,8 @@ public class SQLiteHelper {
         } else {
             if (sqLiteHelper.version != version) {
                 sqLiteHelper.version = version;
-                sqLiteHelperMap.put(name, sqLiteHelper);
                 sqLiteHelper.sqlBeanServiceImplMap.clear();
+                sqLiteHelperMap.put(name, sqLiteHelper);
             }
         }
         return sqLiteHelper;
@@ -77,10 +80,13 @@ public class SQLiteHelper {
      * @param clazz
      * @return
      */
-    public SqlBeanServiceImpl get(Class<?> clazz) {
+    public <T, ID> SqlBeanServiceImpl<T, ID> get(Class<T> clazz) {
         SqlBeanServiceImpl sqlBeanServiceImpl = sqlBeanServiceImplMap.get(clazz);
         if (sqlBeanServiceImpl == null) {
-            sqlBeanServiceImpl = new SqlBeanServiceImpl(clazz, new DatabaseHelper(clazz, context, name, null, version));
+            if (databaseHelper == null) {
+                databaseHelper = new DatabaseHelper(clazz, context, name, null, version);
+            }
+            sqlBeanServiceImpl = new SqlBeanServiceImpl(clazz, databaseHelper);
             sqlBeanServiceImplMap.put(clazz, sqlBeanServiceImpl);
         }
         return sqlBeanServiceImpl;

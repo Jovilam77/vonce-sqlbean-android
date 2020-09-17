@@ -4,6 +4,7 @@ import android.database.Cursor;
 
 /**
  * 行数据映射
+ * @author Jovi
  *
  * @param <T>
  */

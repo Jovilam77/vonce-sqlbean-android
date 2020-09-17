@@ -39,10 +39,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             Create create;
             SqlBeanConfig sqlBeanConfig = new SqlBeanConfig(DbType.SQLite);
-            for (String name : classNames) {
+            for (String className : classNames) {
                 Table table = SqlBeanUtil.getTable(clazz);
                 if (StringUtil.isEmpty(table.getSchema()) || table.getSchema().equals(dbName)) {
-                    Class<?> clazz = Class.forName(name);
+                    Class<?> clazz = Class.forName(className);
                     SqlTable sqlTable = clazz.getAnnotation(SqlTable.class);
                     if (sqlTable.autoCreate()) {
                         create = new Create();

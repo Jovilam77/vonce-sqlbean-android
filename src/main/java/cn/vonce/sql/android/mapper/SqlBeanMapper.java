@@ -20,6 +20,7 @@ import java.util.Map;
 
 /**
  * SqlBean 结果映射
+ * @author Jovi
  */
 public class SqlBeanMapper<T> implements RowMapper<T> {
 
