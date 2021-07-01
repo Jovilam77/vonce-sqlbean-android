@@ -6,7 +6,9 @@ import cn.vonce.sql.android.helper.SQLiteTemplate;
 import cn.vonce.sql.android.mapper.SqlBeanMapper;
 import cn.vonce.sql.bean.*;
 import cn.vonce.sql.config.SqlBeanConfig;
+import cn.vonce.sql.config.SqlBeanDB;
 import cn.vonce.sql.enumerate.DbType;
+import cn.vonce.sql.helper.Wrapper;
 import cn.vonce.sql.provider.SqlBeanProvider;
 import cn.vonce.sql.service.SqlBeanService;
 import cn.vonce.sql.service.TableService;
@@ -26,18 +28,24 @@ import java.util.Map;
  * @email 766255988@qq.com
  * @date 2019年5月22日下午16:20:12
  */
-public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBeanService<T, ID> {
+public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableService {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     private SQLiteTemplate sqliteTemplate;
 
     private TableService tableService;
 
-    private final static SqlBeanConfig sqlBeanConfig = new SqlBeanConfig(DbType.SQLite);
+    private SqlBeanDB sqlBeanDB;
+
+    @Override
+    public SqlBeanDB getSqlBeanDB() {
+        if (sqlBeanDB == null) {
+            SqlBeanDB sqlBeanDB = new SqlBeanDB();
+            sqlBeanDB.setDbType(DbType.SQLite);
+            sqlBeanDB.setSqlBeanConfig(new SqlBeanConfig());
+        }
+        return sqlBeanDB;
+    }
 
     public Class<?> clazz;
 
@@ -77,12 +85,78 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     }
 
     @Override
+    public void dropTable() {
+        sqliteTemplate.execSQL(SqlBeanProvider.dropTableSql(getSqlBeanDB(), clazz));
+    }
+
+    @Override
+    public void createTable() {
+        sqliteTemplate.execSQL(SqlBeanProvider.createTableSql(getSqlBeanDB(), clazz));
+    }
+
+    @Override
+    public void dropAndCreateTable() {
+        dropTable();
+        createTable();
+    }
+
+    @Override
+    public List<String> getTableList() {
+        return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB()), new SqlBeanMapper<String>(clazz, String.class));
+    }
+
+    @Override
+    public String backup() {
+        return null;
+    }
+
+    @Override
+    public void backup(String targetTableName) {
+
+    }
+
+    @Override
+    public void backup(String targetSchema, String targetTableName) {
+
+    }
+
+    @Override
+    public void backup(String targetTableName, Column[] columns, Wrapper wrapper) {
+
+    }
+
+    @Override
+    public void backup(String targetSchema, String targetTableName, Column[] columns, Wrapper wrapper) {
+
+    }
+
+    @Override
+    public int copy(String targetTableName, Wrapper wrapper) {
+        return 0;
+    }
+
+    @Override
+    public int copy(String targetSchema, String targetTableName, Wrapper wrapper) {
+        return 0;
+    }
+
+    @Override
+    public int copy(String targetTableName, Column[] columns, Wrapper wrapper) {
+        return 0;
+    }
+
+    @Override
+    public int copy(String targetSchema, String targetTableName, Column[] columns, Wrapper wrapper) {
+        return 0;
+    }
+
+    @Override
     public T selectById(ID id) {
         if (id == null) {
             return null;
         }
         try {
-            return sqliteTemplate.queryForObject(super.selectByIdSql(sqlBeanConfig, clazz, id),
+            return sqliteTemplate.queryForObject(SqlBeanProvider.selectByIdSql(getSqlBeanDB(), clazz, id),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -99,7 +173,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.queryForObject(super.selectByIdSql(sqlBeanConfig, clazz, id),
+            return sqliteTemplate.queryForObject(SqlBeanProvider.selectByIdSql(getSqlBeanDB(), clazz, id),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -113,7 +187,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             return null;
         }
         try {
-            return sqliteTemplate.query(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
+            return sqliteTemplate.query(SqlBeanProvider.selectByIdsSql(getSqlBeanDB(), clazz, ids),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -130,7 +204,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.query(super.selectByIdsSql(sqlBeanConfig, clazz, ids),
+            return sqliteTemplate.query(SqlBeanProvider.selectByIdsSql(getSqlBeanDB(), clazz, ids),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -142,7 +216,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     @Override
     public T selectOne(Select select) {
         try {
-            return sqliteTemplate.queryForObject(super.selectSql(sqlBeanConfig, clazz, select),
+            return sqliteTemplate.queryForObject(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -157,7 +231,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.queryForObject(super.selectSql(sqlBeanConfig, clazz, select),
+            return sqliteTemplate.queryForObject(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -168,7 +242,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     @Override
     public Map<String, Object> selectMap(Select select) {
         try {
-            return sqliteTemplate.queryForObject(super.selectSql(sqlBeanConfig, clazz, select),
+            return sqliteTemplate.queryForObject(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select),
                     new SqlBeanMapper<Map<String, Object>>(clazz, Map.class));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -179,7 +253,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     @Override
     public T selectOneByCondition(String where, Object... args) {
         try {
-            return sqliteTemplate.queryForObject(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
+            return sqliteTemplate.queryForObject(SqlBeanProvider.selectByConditionSql(getSqlBeanDB(), clazz, null, where, args),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -193,12 +267,22 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.queryForObject(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
+            return sqliteTemplate.queryForObject(SqlBeanProvider.selectByConditionSql(getSqlBeanDB(), clazz, null, where, args),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
+    }
+
+    @Override
+    public T selectOneByCondition(Wrapper where) {
+        return null;
+    }
+
+    @Override
+    public <O> O selectOneByCondition(Class<O> returnType, Wrapper where) {
+        return null;
     }
 
     @Override
@@ -207,12 +291,17 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
+            return sqliteTemplate.query(SqlBeanProvider.selectByConditionSql(getSqlBeanDB(), clazz, null, where, args),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
+    }
+
+    @Override
+    public <O> List<O> selectByCondition(Class<O> returnType, Wrapper where) {
+        return null;
     }
 
     @Override
@@ -221,7 +310,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, paging, where, args),
+            return sqliteTemplate.query(SqlBeanProvider.selectByConditionSql(getSqlBeanDB(), clazz, paging, where, args),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -230,20 +319,30 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     }
 
     @Override
+    public <O> List<O> selectByCondition(Class<O> returnType, Paging paging, Wrapper where) {
+        return null;
+    }
+
+    @Override
     public List<T> selectByCondition(String where, Object... args) {
         try {
-            return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, null, where, args),
+            return sqliteTemplate.query(SqlBeanProvider.selectByConditionSql(getSqlBeanDB(), clazz, null, where, args),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
+    }
+
+    @Override
+    public List<T> selectByCondition(Wrapper where) {
+        return null;
     }
 
     @Override
     public List<T> selectByCondition(Paging paging, String where, Object... args) {
         try {
-            return sqliteTemplate.query(super.selectByConditionSql(sqlBeanConfig, clazz, paging, where, args),
+            return sqliteTemplate.query(SqlBeanProvider.selectByConditionSql(getSqlBeanDB(), clazz, paging, where, args),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -251,19 +350,29 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
         }
     }
 
-    public long selectCountByCondition(String where, Object... args) {
-        return sqliteTemplate.queryForObject(super.selectCountByConditionSql(sqlBeanConfig, clazz, where, args), new SqlBeanMapper<Long>(clazz, Long.class));
+    @Override
+    public List<T> selectByCondition(Paging paging, Wrapper where) {
+        return null;
+    }
+
+    public int selectCountByCondition(String where, Object... args) {
+        return sqliteTemplate.queryForObject(SqlBeanProvider.selectCountByConditionSql(getSqlBeanDB(), clazz, where, args), new SqlBeanMapper<Integer>(clazz, Long.class));
     }
 
     @Override
-    public long countAll() {
-        return sqliteTemplate.queryForObject(super.selectCountByConditionSql(sqlBeanConfig, clazz, null, null), new SqlBeanMapper<Long>(clazz, Long.class));
+    public int selectCountByCondition(Wrapper where) {
+        return 0;
+    }
+
+    @Override
+    public int countAll() {
+        return sqliteTemplate.queryForObject(SqlBeanProvider.selectCountByConditionSql(getSqlBeanDB(), clazz, null, null), new SqlBeanMapper<Integer>(clazz, Long.class));
     }
 
     @Override
     public List<T> selectAll() {
         try {
-            return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, null),
+            return sqliteTemplate.query(SqlBeanProvider.selectAllSql(getSqlBeanDB(), clazz, null),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -274,7 +383,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     @Override
     public List<T> selectAll(Paging paging) {
         try {
-            return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, paging),
+            return sqliteTemplate.query(SqlBeanProvider.selectAllSql(getSqlBeanDB(), clazz, paging),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -288,7 +397,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, null),
+            return sqliteTemplate.query(SqlBeanProvider.selectAllSql(getSqlBeanDB(), clazz, null),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -302,7 +411,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.query(super.selectAllSql(sqlBeanConfig, clazz, paging),
+            return sqliteTemplate.query(SqlBeanProvider.selectAllSql(getSqlBeanDB(), clazz, paging),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -313,7 +422,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     @Override
     public List<Map<String, Object>> selectMapList(Select select) {
         try {
-            return sqliteTemplate.query(super.selectSql(sqlBeanConfig, clazz, select),
+            return sqliteTemplate.query(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select),
                     new SqlBeanMapper<Map<String, Object>>(clazz, Map.class));
         } catch (
                 Exception e) {
@@ -329,7 +438,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
                 clazz = returnType;
             }
-            return sqliteTemplate.query(super.selectSql(sqlBeanConfig, clazz, select),
+            return sqliteTemplate.query(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select),
                     new SqlBeanMapper<O>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -340,7 +449,7 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     @Override
     public List<T> select(Select select) {
         try {
-            return sqliteTemplate.query(super.selectSql(sqlBeanConfig, clazz, select),
+            return sqliteTemplate.query(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select),
                     new SqlBeanMapper<T>(clazz, clazz));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
@@ -349,137 +458,139 @@ public class SqlBeanServiceImpl<T, ID> extends SqlBeanProvider implements SqlBea
     }
 
     @Override
-    public long count(Select select) {
-        return sqliteTemplate.queryForObject(super.countSql(sqlBeanConfig, clazz, select), new SqlBeanMapper<Long>(clazz, Long.class));
+    public int count(Select select) {
+        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Long.class));
     }
 
     @Override
-    public long count(Class<?> clazz, Select select) {
-        return sqliteTemplate.queryForObject(super.countSql(sqlBeanConfig, clazz, select), new SqlBeanMapper<Long>(clazz, Long.class));
+    public int count(Class<?> clazz, Select select) {
+        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Long.class));
     }
 
     @Override
-    public long deleteById(ID... id) {
-        return sqliteTemplate.update(super.deleteByIdSql(sqlBeanConfig, clazz, id));
+    public int deleteById(ID... id) {
+        return sqliteTemplate.update(SqlBeanProvider.deleteByIdSql(getSqlBeanDB(), clazz, id));
     }
 
     @Override
-    public long deleteByCondition(String where, Object... args) {
-        return sqliteTemplate.update(super.deleteByConditionSql(sqlBeanConfig, clazz, where, args));
+    public int deleteByCondition(String where, Object... args) {
+        return sqliteTemplate.update(SqlBeanProvider.deleteByConditionSql(getSqlBeanDB(), clazz, where, args));
     }
 
     @Override
-    public long delete(Delete delete) {
-        return sqliteTemplate.update(super.deleteSql(sqlBeanConfig, clazz, delete, false));
+    public int deleteByCondition(Wrapper where) {
+        return 0;
     }
 
     @Override
-    public long delete(Delete delete, boolean ignore) {
-        return sqliteTemplate.update(super.deleteSql(sqlBeanConfig, clazz, delete, ignore));
+    public int delete(Delete delete) {
+        return sqliteTemplate.update(SqlBeanProvider.deleteSql(getSqlBeanDB(), clazz, delete, false));
     }
 
     @Override
-    public long logicallyDeleteById(ID id) {
-        return sqliteTemplate.update(super.logicallyDeleteByIdSql(sqlBeanConfig, clazz, id));
+    public int delete(Delete delete, boolean ignore) {
+        return sqliteTemplate.update(SqlBeanProvider.deleteSql(getSqlBeanDB(), clazz, delete, ignore));
     }
 
     @Override
-    public long logicallyDeleteByCondition(String where, Object... args) {
-        return sqliteTemplate.update(super.logicallyDeleteByConditionSql(sqlBeanConfig, clazz, where, args));
+    public int logicallyDeleteById(ID... id) {
+        return sqliteTemplate.update(SqlBeanProvider.logicallyDeleteByIdSql(getSqlBeanDB(), clazz, id));
     }
 
     @Override
-    public long update(Update update) {
-        return sqliteTemplate.update(super.updateSql(sqlBeanConfig, update, false));
+    public int logicallyDeleteByCondition(String where, Object... args) {
+        return sqliteTemplate.update(SqlBeanProvider.logicallyDeleteByConditionSql(getSqlBeanDB(), clazz, where, args));
     }
 
     @Override
-    public long update(Update update, boolean ignore) {
-        return sqliteTemplate.update(super.updateSql(sqlBeanConfig, update, ignore));
+    public int logicallyDeleteByCondition(Wrapper where) {
+        return 0;
     }
 
     @Override
-    public long updateById(T bean, ID id, boolean updateNotNull) {
-        return sqliteTemplate.update(super.updateByIdSql(sqlBeanConfig, bean, id, updateNotNull, null));
+    public int update(Update update) {
+        return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
     @Override
-    public long updateById(T bean, ID id, boolean updateNotNull, String[] filterFields) {
-        return sqliteTemplate.update(super.updateByIdSql(sqlBeanConfig, bean, id, updateNotNull, filterFields));
+    public int update(Update update, boolean ignore) {
+        return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, ignore));
     }
 
     @Override
-    public long updateByBeanId(T bean, boolean updateNotNull) {
-        return sqliteTemplate.update(super.updateByBeanIdSql(sqlBeanConfig, bean, updateNotNull, null));
+    public int updateById(T bean, ID id, boolean updateNotNull, boolean optimisticLock) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByIdSql(getSqlBeanDB(), clazz, bean, id, updateNotNull, optimisticLock, null));
     }
 
     @Override
-    public long updateByBeanId(T bean, boolean updateNotNull, String[] filterFields) {
-        return sqliteTemplate.update(super.updateByBeanIdSql(sqlBeanConfig, bean, updateNotNull, filterFields));
+    public int updateById(T bean, ID id, boolean updateNotNull, boolean optimisticLock, String[] filterFields) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByIdSql(getSqlBeanDB(), clazz, bean, id, updateNotNull, optimisticLock, filterFields));
     }
 
     @Override
-    public long updateByCondition(T bean, boolean updateNotNull, String where, Object... args) {
-        return sqliteTemplate.update(super.updateByConditionSql(sqlBeanConfig, bean, updateNotNull, null, where, args));
+    public int updateByBeanId(T bean, boolean updateNotNull, boolean optimisticLock) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByBeanIdSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, null));
     }
 
     @Override
-    public long updateByCondition(T bean, boolean updateNotNull, String[] filterFields, String where, Object... args) {
-        return sqliteTemplate.update(super.updateByConditionSql(sqlBeanConfig, bean, updateNotNull, filterFields, where, args));
+    public int updateByBeanId(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByBeanIdSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, filterFields));
     }
 
     @Override
-    public long updateByBeanCondition(T bean, boolean updateNotNull, String where) {
-        return sqliteTemplate.update(super.updateByBeanConditionSql(sqlBeanConfig, bean, updateNotNull, null, where));
+    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, String where, Object... args) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByConditionSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, null, where, args));
     }
 
     @Override
-    public long updateByBeanCondition(T bean, boolean updateNotNull, String[] filterFields, String where) {
-        return sqliteTemplate.update(super.updateByBeanConditionSql(sqlBeanConfig, bean, updateNotNull, filterFields, where));
+    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, Wrapper where) {
+        Update update = new Update();
+        update.setUpdateBean(bean);
+        update.setUpdateNotNull(updateNotNull);
+        update.setOptimisticLock(optimisticLock);
+        update.setWhere(where);
+        return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
     @Override
-    public long insert(T... bean) {
-        return sqliteTemplate.update(super.insertBeanSql(sqlBeanConfig, bean));
+    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields, String where, Object... args) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByConditionSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, filterFields, where, args));
     }
 
     @Override
-    public long insert(List<T> beanList) {
-        return sqliteTemplate.update(super.insertBeanSql(sqlBeanConfig, beanList));
+    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields, Wrapper where) {
+        Update update = new Update();
+        update.setUpdateBean(bean);
+        update.setUpdateNotNull(updateNotNull);
+        update.setOptimisticLock(optimisticLock);
+        update.setFilterFields(filterFields);
+        update.setWhere(where);
+        return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
     @Override
-    public long inset(Insert insert) {
-        return sqliteTemplate.update(super.insertBeanSql(sqlBeanConfig, insert));
+    public int updateByBeanCondition(T bean, boolean updateNotNull, boolean optimisticLock, String where) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByBeanConditionSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, null, where));
     }
 
     @Override
-    public TableService getTableService() {
-        if (tableService == null) {
-            tableService = new TableService() {
-                @Override
-                public void dropTable() {
-                    sqliteTemplate.execSQL(SqlBeanServiceImpl.this.dropTableSql(clazz));
-                }
+    public int updateByBeanCondition(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields, String where) {
+        return sqliteTemplate.update(SqlBeanProvider.updateByBeanConditionSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, filterFields, where));
+    }
 
-                @Override
-                public void createTable() {
-                    sqliteTemplate.execSQL(SqlBeanServiceImpl.this.createTableSql(sqlBeanConfig, clazz));
-                }
+    @Override
+    public int insert(T... bean) {
+        return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, bean));
+    }
 
-                @Override
-                public void dropAndCreateTable() {
-                    dropTable();
-                    createTable();
-                }
+    @Override
+    public int insert(List<T> beanList) {
+        return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, beanList));
+    }
 
-                @Override
-                public List<String> getTableList() {
-                    return sqliteTemplate.query(SqlBeanServiceImpl.this.selectTableListSql(sqlBeanConfig), new SqlBeanMapper<String>(clazz, String.class));
-                }
-            };
-        }
-        return tableService;
+    @Override
+    public int inset(Insert insert) {
+        return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, insert));
     }
 
 }

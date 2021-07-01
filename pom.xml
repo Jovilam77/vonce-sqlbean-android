@@ -120,13 +120,13 @@
 
     <artifactId>vonce-sqlbean-android</artifactId>
     <groupId>cn.vonce</groupId>
-    <version>1.0.2</version>
+    <version>1.0.5-beta</version>
     <packaging>jar</packaging>
 
     <!-- 版本信息 -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vonce.sqlbean.core.version>1.0.1</vonce.sqlbean.core.version>
+        <vonce.sqlbean.core.version>1.0.2-beta</vonce.sqlbean.core.version>
         <com.google.guava.version>20.0</com.google.guava.version>
     </properties>
 
