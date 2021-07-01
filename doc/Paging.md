@@ -24,7 +24,7 @@ public ResultData<List<Essay>> getList(int pagenum,int pagesize) {
 	pageHelper.paging(select, sqlBeanService);//分页查询
 	//如果你要联表查询请使用下面这个（具体请看联表查询注解那里）
 	//pageHelper.paging(EssayUnion.class, select, sqlBeanService);
-	return pageHelper.getResultData("获取文章列表成功");//返回结果
+	return pageHelper.getResultData();//返回结果
 }
 ```
 #### 方法二
