@@ -589,7 +589,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     }
 
     @Override
-    public int inset(Insert insert) {
+    public int insert(Insert insert) {
         return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, insert));
     }
 
