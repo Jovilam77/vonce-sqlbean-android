@@ -1,19 +1,19 @@
 ## Sqlbean For Android
 #### 介绍
-###### Sqlbean是一款使用Java面向对象思想来编写并生成Sql语句的工具，在此基础上对Mybatis和Spring Jdbc实现了类似于JPA的轻量级插件支持。其中内置大量常用SQL执行的方法，可以非常方便的达到你想要的目的，相对复杂的SQL语句也得以支持，在常规的项目开发几乎做到不写DAO层，可以有效的提高项目开发的效率，让开发者更专注于业务代码的编写。
+###### Sqlbean是一款使用Java面向对象思想来编写并生成Sql语句的工具，在此基础上对Mybatis和Spring Jdbc实现了类似于JPA的轻量级插件支持。其中内置大量常用SQL执行的方法，可以非常方便的达到你想要的目的，相对复杂的SQL语句也得以支持，在常规的项目开发几乎做到不写SQL，可以有效的提高项目开发的效率，让开发者更专注于业务代码的编写。
 
-###### 特点：零入侵，自动建表，连表查询，乐观锁，分页
-###### 环境：Android 4.0+
+###### 🚀特点: 零入侵, 自动建表, 连表查询, 乐观锁，分页
+###### 💻环境: Android 4.0+
 
-###### Sqlbean-Core与Java-Spring版请移步这里👉 [gitee](https://gitee.com/iJovi/vonce-sqlbean "vonce-sqlbean")， [github](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
+###### Sqlbean-Core与Java-Spring版请移步这里👉 [gitee](https://gitee.com/iJovi/vonce-sqlbean "vonce-sqlbean"), [github](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
 
 #### 简单上手
 
 
-###### 1：引入Gradle依赖
-	implementation 'cn.vonce:vonce-sqlbean-android:1.0.5-beta'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.5-beta'
-###### 2：标注实体类，实体类与表字段映射
+###### 1.引入Gradle依赖
+	implementation 'cn.vonce:vonce-sqlbean-android:1.0.5-beta2'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.5-beta2'
+###### 2.标注实体类，实体类与表字段映射
 
 ```java
 @SqlTable("d_essay")
@@ -40,7 +40,7 @@ public class Essay {
 	
 }
 ```
-###### 3：获取连接（建议在上一步把所有表字段关系建立好，第一次获取连接时会自动创建表结构）
+###### 3.获取连接（建议在上一步把所有表字段关系建立好，第一次获取连接时会自动创建表结构）
 ```java
 public class MainActivity extends AppCompatActivity {
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
-###### 4：CRUD操作
+###### 4.CRUD操作
 ```java
 
 public class MainActivity extends AppCompatActivity {
@@ -176,15 +176,15 @@ public class MainActivity extends AppCompatActivity {
 
 }
 
-##### ↓更多用法请查看下方文档↓
+##### 👇👇👇更多用法请查看下方文档👇👇👇
 
-#### [注解与用法（含ID生成、乐观锁、逻辑删除、连表查询）](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Annotation.md "注解与用法（含ID生成、乐观锁、逻辑删除、连表查询）")
-#### [Select操作相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Select.md "Select操作相关方法")
-#### [Insert操作相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Insert.md "Insert操作相关方法")
-#### [Delete操作相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Delete.md "Delete操作相关方法")
-#### [Update操作相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Update.md "Update操作相关方法")
-#### [表结构操作相关方法](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Table.md "表结构操作相关方法")
-#### [Service接口和实现类](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Interface.md "Service接口和实现类")
-#### [SqlBean和SqlHelper](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/SqlHelper.md "SqlBean和SqlHelper")
-#### [Where条件和占位符](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Where.md "Where条件和占位符")
-#### [分页查询](https://github.com/Jovilam77/vonce-sqlbean-android/blob/develop/doc/Paging.md "分页查询")
+###### [0️⃣. 注解详情与使用](doc/Annotation.md "注解详情与使用")
+###### [1️⃣. Select](doc/Select.md "Select")
+###### [2️⃣. Insert](doc/Insert.md "Insert")
+###### [3️⃣. Delete](doc/Delete.md "Delete")
+###### [4️⃣. Update](doc/Update.md "Update")
+###### [5️⃣. 表操作相关](doc/Table.md "表操作相关")
+###### [6️⃣. 分页查询](doc/Paging.md "分页查询")
+###### [7️⃣. Service接口和实现类](doc/Interface.md "Service接口和实现类")
+###### [8️⃣. SqlBean和SqlHelper](doc/SqlHelper.md "SqlBean和SqlHelper")
+###### [9️⃣. Where条件和包装器](doc/Where.md "Where条件和包装器")
