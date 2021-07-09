@@ -221,6 +221,11 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
                 break;
             case "char":
             case "java.lang.Character":
+                value = cursor.getString(index);
+                if (StringUtil.isNotEmpty(value)) {
+                    value = value.toString().charAt(0);
+                }
+                break;
             case "java.lang.String":
                 value = cursor.getString(index);
                 break;
