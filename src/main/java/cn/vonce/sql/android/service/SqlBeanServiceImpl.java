@@ -86,6 +86,13 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
 
     @Override
     public void dropTable() {
+        SqlBeanDB sqlBeanDB = getSqlBeanDB();
+        if (sqlBeanDB.getDbType() != DbType.MySQL && sqlBeanDB.getDbType() != DbType.MariaDB && sqlBeanDB.getDbType() != DbType.PostgreSQL && sqlBeanDB.getDbType() != DbType.SQLServer) {
+            List<String> nameList =  sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), SqlBeanUtil.getTable(clazz).getName()), new SqlBeanMapper<String>(clazz, String.class));
+            if (nameList == null || nameList.isEmpty()) {
+                return;
+            }
+        }
         sqliteTemplate.execSQL(SqlBeanProvider.dropTableSql(getSqlBeanDB(), clazz));
     }
 
@@ -102,7 +109,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
 
     @Override
     public List<String> getTableList() {
-        return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB()), new SqlBeanMapper<String>(clazz, String.class));
+        return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), null), new SqlBeanMapper<String>(clazz, String.class));
     }
 
     @Override
