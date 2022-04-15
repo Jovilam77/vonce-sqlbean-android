@@ -42,7 +42,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public SqlBeanDB getSqlBeanDB() {
         if (sqlBeanDB == null) {
-            SqlBeanDB sqlBeanDB = new SqlBeanDB();
+            sqlBeanDB = new SqlBeanDB();
             sqlBeanDB.setDbType(DbType.SQLite);
             sqlBeanDB.setSqlBeanConfig(new SqlBeanConfig());
         }
