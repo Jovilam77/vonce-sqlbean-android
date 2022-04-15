@@ -11,8 +11,8 @@
 
 
 ###### 1.引入Gradle依赖
-	implementation 'cn.vonce:vonce-sqlbean-android:1.0.5-beta5'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.5-beta5'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.0.5-beta7'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.5-beta7'
 ###### 2.标注实体类，实体类与表字段映射
 
 ```java
@@ -46,8 +46,8 @@ public class Essay {
 ```java
 public class MainActivity extends AppCompatActivity {
 
-    private SqlBeanService<Essay, String> essayService;
-	//private SqlBeanService<User, String> userService;
+    private SqlBeanHelper<Essay, String> essaySqlBeanHelper;
+	//private SqlBeanHelper<User, String> userSqlBeanHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +56,11 @@ public class MainActivity extends AppCompatActivity {
 
         //方式一，单库模式
         SQLiteHelper.init(this, "testdb", 1);//建议放在MainActivity或继承的Application
-        essayService = SQLiteHelper.db().get(Essay.class);
+        essaySqlBeanHelper = SQLiteHelper.db().get(Essay.class);
 
         //方式二，多库模式
-        //essayService = SQLiteHelper.db(this, "testdb1", 1).get(Essay.class);
-        //userService = SQLiteHelper.db(this, "testdb2", 1).get(User.class);
+        //essaySqlBeanHelper = SQLiteHelper.db(this, "testdb1", 1).get(Essay.class);
+        //userSqlBeanHelper = SQLiteHelper.db(this, "testdb2", 1).get(User.class);
 
     }
 }
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
 public class MainActivity extends AppCompatActivity {
 	
-    private SqlBeanService<Essay, String> essayService;
+    private SqlBeanHelper<Essay, String> sqlBeanHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SQLiteHelper.init(this, "testdb", 1);
-        essayService = SQLiteHelper.db().get(Essay.class);
+        sqlBeanHelper = SQLiteHelper.db().get(Essay.class);
 
     }
 
@@ -87,13 +87,13 @@ public class MainActivity extends AppCompatActivity {
         
         //查询列表
         List<Essay> list = essayService.selectAll();
-        //list = essayService.selectByCondition("& > ?", $Essay.id, 20);
-        list = essayService.selectByCondition(Wrapper.where(gt($Essay.id, 10)).and(lt($Essay.id, 20)));
+        //list = sqlBeanHelper.selectByCondition("& > ?", $Essay.id, 20);
+        list = sqlBeanHelper.selectByCondition(Wrapper.where(gt($Essay.id, 10)).and(lt($Essay.id, 20)));
 
         //查询一条
-        Essay essay = essayService.selectById(1L);
-        //essay = essayService.selectOneByCondition("& = ?", $Essay.id, 1);
-        essay = essayService.selectOneByCondition(Wrapper.where(eq($Essay.id, 333)));
+        Essay essay = sqlBeanHelper.selectById(1L);
+        //essay = sqlBeanHelper.selectOneByCondition("& = ?", $Essay.id, 1);
+        essay = sqlBeanHelper.selectOneByCondition(Wrapper.where(eq($Essay.id, 333)));
 
         //复杂查询
         Select select = new Select();
@@ -108,13 +108,13 @@ public class MainActivity extends AppCompatActivity {
         //也可使用表达式 如果这三种条件同时出现 那么此方式优先级最高 上面包装器次之
         //select.setWhere("& = ? AND & = ?", $Essay.id, 1, $Essay.content, "222");
         select.orderBy("id", SqlSort.DESC);
-        list = essayService.select(select);
+        list = sqlBeanHelper.select(select);
 
         //用于查询Map
-        Map<String, Object> map = essayService.selectMap(select);
+        Map<String, Object> map = sqlBeanHelper.selectMap(select);
 
         //用于查询Map列表
-        List<Map<String, Object>> mapList = essayService.selectMapList(select);
+        List<Map<String, Object>> mapList = sqlBeanHelper.selectMapList(select);
         
 	}
 
@@ -124,25 +124,25 @@ public class MainActivity extends AppCompatActivity {
 		// 查询对象
         Select select = new Select();
         PageHelper<Essay> pageHelper = new PageHelper<>(0,1);
-        pageHelper.paging(select, essayService);
+        pageHelper.paging(select, sqlBeanHelper);
         ResultData<List<Essay>> data = pageHelper.getResultData();
         
         // 或者这样
-        // data = new PageHelper<Essay>(0,1).paging(new Select(),essayService).toResult.getResultData();
+        // data = new PageHelper<Essay>(0,1).paging(new Select(),sqlBeanHelper).toResult.getResultData();
         
         //又或者 更简便的用法（不带统计和页数信息）
-        //List<Essay> list = essayService.selectByCondition(new Paging(0,10), Wrapper.where(Cond.gt(SqlEssay.id, 10)).and(Cond.lt(SqlEssay.id, 20)));
+        //List<Essay> list = sqlBeanHelper.selectByCondition(new Paging(0,10), Wrapper.where(Cond.gt(SqlEssay.id, 10)).and(Cond.lt(SqlEssay.id, 20)));
 	}
 
 	//更新
 	public void update(Essay essay) {
         
         //根据bean内部id更新
-        long i = essayService.updateByBeanId(essay);
+        long i = sqlBeanHelper.updateByBeanId(essay);
         //根据外部id更新
-        //i = essayService.updateById(essay, 20);
+        //i = sqlBeanHelper.updateById(essay, 20);
         //根据条件更新
-        //i = essayService.updateByCondition(essay, Wrapper.where(gt($Essay.id, 1)).and(eq($Essay.content, "222")));
+        //i = sqlBeanHelper.updateByCondition(essay, Wrapper.where(gt($Essay.id, 1)).and(eq($Essay.content, "222")));
         
 	}
 
@@ -150,9 +150,9 @@ public class MainActivity extends AppCompatActivity {
 	public void deleteById(Integer[] id) {
         
         //根据id删除
-        long i = essayService.deleteById(id);
+        long i = sqlBeanHelper.deleteById(id);
         //根据条件删除
-        //i = essayService.deleteByCondition(Wrapper.where(gt($Essay.id, 1)).and(eq($Essay.content, "222")));
+        //i = sqlBeanHelper.deleteByCondition(Wrapper.where(gt($Essay.id, 1)).and(eq($Essay.content, "222")));
 
     }
 
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 			Essay essay = new Essay(i, "name" + i);
 			essayList.add(essay);
 		}
-		essayService.insert(essayList);
+        sqlBeanHelper.insert(essayList);
         
 	}
 

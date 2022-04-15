@@ -27,7 +27,7 @@ import java.util.Map;
  * @param <T>
  * @author Jovi
  * @version 1.0
- * @email 766255988@qq.com
+ * @email imjovi@qq.com
  * @date 2019年5月22日下午16:20:12
  */
 public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableService {

@@ -20,6 +20,8 @@ import cn.vonce.sql.uitls.StringUtil;
 
 /**
  * 初始化数据库
+ *
+ * @author Jovi
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -51,6 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         create = new Create();
                         create.setSqlBeanDB(sqlBeanDB);
                         create.setBeanClass(clazz);
+                        create.setTable(clazz);
                         String sql = SqlHelper.buildCreateSql(create);
                         db.execSQL(sql);
                         Log.i("sqlbean", sql);

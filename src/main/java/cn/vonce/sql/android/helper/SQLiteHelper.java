@@ -1,7 +1,6 @@
 package cn.vonce.sql.android.helper;
 
 import android.content.Context;
-import cn.vonce.sql.android.service.SqlBeanServiceImpl;
 import cn.vonce.sql.helper.SqlHelper;
 
 import java.util.Map;
@@ -16,7 +15,7 @@ public class SQLiteHelper {
 
     private volatile static SQLiteHelper defaultSqLiteHelper;
     private final static Map<String, SQLiteHelper> sqLiteHelperMap = new WeakHashMap<>();
-    private final Map<Class<?>, SqlBeanServiceImpl> sqlBeanServiceImplMap = new WeakHashMap<>();
+    private final Map<Class<?>, SqlBeanHelper> sqlBeanHelperMap = new WeakHashMap<>();
 
     private Context context;
     private String name;
@@ -61,7 +60,7 @@ public class SQLiteHelper {
         } else {
             if (sqLiteHelper.version != version) {
                 sqLiteHelper.version = version;
-                sqLiteHelper.sqlBeanServiceImplMap.clear();
+                sqLiteHelper.sqlBeanHelperMap.clear();
                 sqLiteHelperMap.put(name, sqLiteHelper);
             }
         }
@@ -78,22 +77,40 @@ public class SQLiteHelper {
         return defaultSqLiteHelper;
     }
 
+//    /**
+//     * 获得数据库连接
+//     *
+//     * @param clazz
+//     * @return
+//     */
+//    public <T, ID> SqlBeanServiceImpl<T, ID> get(Class<T> clazz) {
+//        SqlBeanServiceImpl sqlBeanServiceImpl = sqlBeanServiceImplMap.get(clazz);
+//        if (sqlBeanServiceImpl == null) {
+//            if (databaseHelper == null) {
+//                databaseHelper = new DatabaseHelper(clazz, context, name, null, version);
+//            }
+//            sqlBeanServiceImpl = new SqlBeanServiceImpl(clazz, databaseHelper);
+//            sqlBeanServiceImplMap.put(clazz, sqlBeanServiceImpl);
+//        }
+//        return sqlBeanServiceImpl;
+//    }
+
     /**
      * 获得数据库连接
      *
      * @param clazz
      * @return
      */
-    public <T, ID> SqlBeanServiceImpl<T, ID> get(Class<T> clazz) {
-        SqlBeanServiceImpl sqlBeanServiceImpl = sqlBeanServiceImplMap.get(clazz);
-        if (sqlBeanServiceImpl == null) {
+    public <T, ID> SqlBeanHelper<T, ID> get(Class<T> clazz) {
+        SqlBeanHelper sqlBeanHelper = sqlBeanHelperMap.get(clazz);
+        if (sqlBeanHelper == null) {
             if (databaseHelper == null) {
                 databaseHelper = new DatabaseHelper(clazz, context, name, null, version);
             }
-            sqlBeanServiceImpl = new SqlBeanServiceImpl(clazz, databaseHelper);
-            sqlBeanServiceImplMap.put(clazz, sqlBeanServiceImpl);
+            sqlBeanHelper = new SqlBeanHelper(clazz, databaseHelper);
+            sqlBeanHelperMap.put(clazz, sqlBeanHelper);
         }
-        return sqlBeanServiceImpl;
+        return sqlBeanHelper;
     }
 
 }
