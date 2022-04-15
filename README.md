@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
         essayService = SQLiteHelper.db().get(Essay.class);
 
         //方式二，多库模式
-//        essayService = SQLiteHelper.db(this, "testdb1", 1).get(Essay.class);
-//        userService = SQLiteHelper.db(this, "testdb2", 1).get(User.class);
+        //essayService = SQLiteHelper.db(this, "testdb1", 1).get(Essay.class);
+        //userService = SQLiteHelper.db(this, "testdb2", 1).get(User.class);
 
     }
 }

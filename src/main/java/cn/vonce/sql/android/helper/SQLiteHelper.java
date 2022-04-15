@@ -14,7 +14,7 @@ import java.util.WeakHashMap;
  */
 public class SQLiteHelper {
 
-    private static SQLiteHelper defaultSqLiteHelper;
+    private volatile static SQLiteHelper defaultSqLiteHelper;
     private final static Map<String, SQLiteHelper> sqLiteHelperMap = new WeakHashMap<>();
     private final Map<Class<?>, SqlBeanServiceImpl> sqlBeanServiceImplMap = new WeakHashMap<>();
 
@@ -32,22 +32,26 @@ public class SQLiteHelper {
     /**
      * 初始化默认数据库参数
      *
-     * @param context
-     * @param name
-     * @param version
+     * @param context 上下文
+     * @param name    数据库名称
+     * @param version 数据库版本
      */
     public static void init(Context context, String name, int version) {
         if (defaultSqLiteHelper == null) {
-            defaultSqLiteHelper = new SQLiteHelper(context, name, version);
+            synchronized (SQLiteHelper.class) {
+                if (defaultSqLiteHelper == null) {
+                    defaultSqLiteHelper = new SQLiteHelper(context, name, version);
+                }
+            }
         }
     }
 
     /**
      * 动态设置数据库参数
      *
-     * @param context
-     * @param name
-     * @param version
+     * @param context 上下文
+     * @param name    数据库名称
+     * @param version 数据库版本
      * @return
      */
     public static SQLiteHelper db(Context context, String name, int version) {
