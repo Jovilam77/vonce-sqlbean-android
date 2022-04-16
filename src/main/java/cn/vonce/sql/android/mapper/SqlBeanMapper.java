@@ -4,6 +4,8 @@ package cn.vonce.sql.android.mapper;
 import android.database.Cursor;
 
 import cn.vonce.sql.annotation.SqlJoin;
+import cn.vonce.sql.bean.ColumnInfo;
+import cn.vonce.sql.bean.TableInfo;
 import cn.vonce.sql.constant.SqlConstant;
 import cn.vonce.sql.uitls.DateUtil;
 import cn.vonce.sql.uitls.ReflectUtil;
@@ -37,13 +39,16 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
     public T mapRow(Cursor cursor, int index) {
         Object object = null;
         if (cursor.moveToNext()) {
-            if (SqlBeanUtil.isMap(returnType.getName())) {
-                object = mapHandleResultSet(cursor);
-            } else if (!SqlBeanUtil.isBaseType(returnType.getName())) {
-                object = beanHandleResultSet(clazz, cursor);
-            } else {
-                object = baseHandleResultSet(cursor);
+            if (returnType.getName().equals(ColumnInfo.class.getName()) || returnType.getName().equals(TableInfo.class.getName())) {
+               return (T) beanHandleResultSet(returnType, cursor);
             }
+            if (SqlBeanUtil.isBaseType(returnType.getName())) {
+                return (T) baseHandleResultSet(cursor, returnType);
+            }
+            if (SqlBeanUtil.isMap(returnType.getName())) {
+                return (T) mapHandleResultSet(cursor);
+            }
+            return (T) beanHandleResultSet(clazz, cursor);
         }
         return (T) object;
     }
@@ -54,9 +59,12 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
      * @param cursor
      * @return
      */
-    public Object baseHandleResultSet(Cursor cursor) {
+    public Object baseHandleResultSet(Cursor cursor, Class<?> returnType) {
         Object value = null;
         value = getValue(cursor.getType(0), 0, cursor);
+        if (value != null && !value.getClass().getName().equals(returnType.getName())) {
+            value = getValueConvert(returnType.getName(), value);
+        }
         if (value == null || value.equals("null")) {
             value = getDefaultValueByColumnType(cursor.getType(0));
         }
@@ -389,9 +397,19 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
             case "java.lang.Double":
                 newValue = new Double(value.toString());
                 break;
+            case "boolean":
+            case "java.lang.Boolean":
+                newValue = new Boolean(value.toString());
+                break;
+            case "char":
+            case "java.lang.Character":
+                newValue = value.toString().charAt(0);
+                break;
+            case "java.lang.String":
+                newValue = value.toString();
+                break;
         }
         return newValue;
     }
-
 
 }

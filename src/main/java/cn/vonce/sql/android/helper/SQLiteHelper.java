@@ -77,24 +77,6 @@ public class SQLiteHelper {
         return defaultSqLiteHelper;
     }
 
-//    /**
-//     * 获得数据库连接
-//     *
-//     * @param clazz
-//     * @return
-//     */
-//    public <T, ID> SqlBeanServiceImpl<T, ID> get(Class<T> clazz) {
-//        SqlBeanServiceImpl sqlBeanServiceImpl = sqlBeanServiceImplMap.get(clazz);
-//        if (sqlBeanServiceImpl == null) {
-//            if (databaseHelper == null) {
-//                databaseHelper = new DatabaseHelper(clazz, context, name, null, version);
-//            }
-//            sqlBeanServiceImpl = new SqlBeanServiceImpl(clazz, databaseHelper);
-//            sqlBeanServiceImplMap.put(clazz, sqlBeanServiceImpl);
-//        }
-//        return sqlBeanServiceImpl;
-//    }
-
     /**
      * 获得数据库连接
      *
@@ -102,12 +84,12 @@ public class SQLiteHelper {
      * @return
      */
     public <T, ID> SqlBeanHelper<T, ID> get(Class<T> clazz) {
-        SqlBeanHelper sqlBeanHelper = sqlBeanHelperMap.get(clazz);
+        SqlBeanHelper<T, ID> sqlBeanHelper = sqlBeanHelperMap.get(clazz);
         if (sqlBeanHelper == null) {
             if (databaseHelper == null) {
                 databaseHelper = new DatabaseHelper(clazz, context, name, null, version);
             }
-            sqlBeanHelper = new SqlBeanHelper(clazz, databaseHelper);
+            sqlBeanHelper = new SqlBeanHelper<>(clazz, databaseHelper);
             sqlBeanHelperMap.put(clazz, sqlBeanHelper);
         }
         return sqlBeanHelper;
