@@ -37,8 +37,8 @@
                     <compilerArgument>
                         -proc:none
                     </compilerArgument>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>8</source>
+                    <target>8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -120,14 +120,14 @@
 
     <artifactId>vonce-sqlbean-android</artifactId>
     <groupId>cn.vonce</groupId>
-    <version>1.0.6</version>
+    <version>1.0.5-beta10</version>
     <packaging>jar</packaging>
 
     <!-- 版本信息 -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vonce.sqlbean.core.version>1.0.3</vonce.sqlbean.core.version>
-        <com.google.guava.version>20.0</com.google.guava.version>
+        <vonce.sqlbean.core.version>1.0.4-beta2</vonce.sqlbean.core.version>
+        <com.google.guava.version>23.0-android</com.google.guava.version>
     </properties>
 
     <dependencies>

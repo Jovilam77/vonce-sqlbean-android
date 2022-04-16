@@ -8,6 +8,7 @@ import cn.vonce.sql.bean.*;
 import cn.vonce.sql.config.SqlBeanConfig;
 import cn.vonce.sql.config.SqlBeanDB;
 import cn.vonce.sql.enumerate.DbType;
+import cn.vonce.sql.exception.SqlBeanException;
 import cn.vonce.sql.helper.Wrapper;
 import cn.vonce.sql.provider.SqlBeanProvider;
 import cn.vonce.sql.service.SqlBeanService;
@@ -27,7 +28,7 @@ import java.util.Map;
  * @param <T>
  * @author Jovi
  * @version 1.0
- * @email 766255988@qq.com
+ * @email imjovi@qq.com
  * @date 2019年5月22日下午16:20:12
  */
 public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableService {
@@ -42,7 +43,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public SqlBeanDB getSqlBeanDB() {
         if (sqlBeanDB == null) {
-            SqlBeanDB sqlBeanDB = new SqlBeanDB();
+            sqlBeanDB = new SqlBeanDB();
             sqlBeanDB.setDbType(DbType.SQLite);
             sqlBeanDB.setSqlBeanConfig(new SqlBeanConfig());
         }
@@ -51,9 +52,12 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
 
     public Class<?> clazz;
 
+    public SqlBeanServiceImpl() {
+    }
+
     public SqlBeanServiceImpl(Class<?> clazz, DatabaseHelper databaseHelper) {
-        this(databaseHelper);
         this.clazz = clazz;
+        sqliteTemplate = new SQLiteTemplate(databaseHelper.getWritableDatabase());
     }
 
     public SqlBeanServiceImpl(DatabaseHelper databaseHelper) {
@@ -200,7 +204,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public List<T> selectByIds(ID... ids) {
         if (ids == null || ids.length == 0) {
-            return null;
+            throw new SqlBeanException("selectByIds方法ids参数至少拥有一个值");
         }
         try {
             return sqliteTemplate.query(SqlBeanProvider.selectByIdsSql(getSqlBeanDB(), clazz, ids),
@@ -214,7 +218,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public <R> List<R> selectByIds(Class<R> returnType, ID... ids) {
         if (ids == null || ids.length == 0) {
-            return null;
+            throw new SqlBeanException("selectByIds方法ids参数至少拥有一个值");
         }
         try {
             if (!SqlBeanUtil.isBaseType(returnType.getName()) && !SqlBeanUtil.isMap(returnType.getName())) {
@@ -412,19 +416,19 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     }
 
     public int selectCountByCondition(String where, Object... args) {
-        return sqliteTemplate.queryForObject(SqlBeanProvider.selectCountByConditionSql(getSqlBeanDB(), clazz, where, args), new SqlBeanMapper<Integer>(clazz, Long.class));
+        return sqliteTemplate.queryForObject(SqlBeanProvider.selectCountByConditionSql(getSqlBeanDB(), clazz, where, args), new SqlBeanMapper<Integer>(clazz, Integer.class));
     }
 
     @Override
     public int selectCountByCondition(Wrapper where) {
         Select select = new Select();
         select.setWhere(where);
-        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Long.class));
+        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Integer.class));
     }
 
     @Override
     public int countAll() {
-        return sqliteTemplate.queryForObject(SqlBeanProvider.selectCountByConditionSql(getSqlBeanDB(), clazz, null, null), new SqlBeanMapper<Integer>(clazz, Long.class));
+        return sqliteTemplate.queryForObject(SqlBeanProvider.selectCountByConditionSql(getSqlBeanDB(), clazz, null, null), new SqlBeanMapper<Integer>(clazz, Integer.class));
     }
 
     @Override
@@ -517,16 +521,19 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
 
     @Override
     public int count(Select select) {
-        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Long.class));
+        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Integer.class));
     }
 
     @Override
     public int count(Class<?> clazz, Select select) {
-        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Long.class));
+        return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Integer.class));
     }
 
     @Override
     public int deleteById(ID... id) {
+        if (id == null || id.length == 0) {
+            throw new SqlBeanException("deleteById方法id参数至少拥有一个值");
+        }
         return sqliteTemplate.update(SqlBeanProvider.deleteByIdSql(getSqlBeanDB(), clazz, id));
     }
 
@@ -554,6 +561,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
 
     @Override
     public int logicallyDeleteById(ID... id) {
+        if (id == null || id.length == 0) {
+            throw new SqlBeanException("logicallyDeleteById方法id参数至少拥有一个值");
+        }
         return sqliteTemplate.update(SqlBeanProvider.logicallyDeleteByIdSql(getSqlBeanDB(), clazz, id));
     }
 
@@ -670,6 +680,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
 
     @Override
     public int insert(T... bean) {
+        if (bean == null || bean.length == 0) {
+            throw new SqlBeanException("insert方法bean参数至少拥有一个值");
+        }
         return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, bean));
     }
 
