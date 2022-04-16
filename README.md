@@ -11,8 +11,8 @@
 
 
 ###### 1.引入Gradle依赖
-	implementation 'cn.vonce:vonce-sqlbean-android:1.0.5-beta9'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.5-beta9'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.0.5-beta10'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.5-beta10'
 ###### 2.标注实体类，实体类与表字段映射
 
 ```java
@@ -20,9 +20,9 @@
 public class Essay {
 
     //标识id字段
-    @SqlId(type = IdType.SNOWFLAKE_ID_16)
+    @SqlId(type = IdType.UUID)
     //@SqlColumn("id")
-    private Long id;
+    private String id;
 
     //@SqlColumn("user_id")
     private String userId;
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	//删除
-	public void deleteById(Integer[] id) {
+	public void deleteById(String[] id) {
         
         //根据id删除
         long i = sqlBeanHelper.deleteById(id);
