@@ -40,7 +40,7 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
         Object object = null;
         if (cursor.moveToNext()) {
             if (returnType.getName().equals(ColumnInfo.class.getName()) || returnType.getName().equals(TableInfo.class.getName())) {
-               return (T) beanHandleResultSet(returnType, cursor);
+                return (T) beanHandleResultSet(returnType, cursor);
             }
             if (SqlBeanUtil.isBaseType(returnType.getName())) {
                 return (T) baseHandleResultSet(cursor, returnType);
@@ -249,11 +249,13 @@ public class SqlBeanMapper<T> implements RowMapper<T> {
             case "java.util.Date":
                 //先取得long类型，转String之后如果长度是10或13那么则为时间戳
                 long timestamp = cursor.getLong(index);
-                String stringTimestamp = timestamp + "";
-                if (stringTimestamp.length() == 10 || stringTimestamp.length() == 13) {
-                    value = new java.util.Date(timestamp);
-                } else {
-                    value = DateUtil.stringToDate(cursor.getString(index));
+                if (timestamp != 0) {
+                    String stringTimestamp = timestamp + "";
+                    if (stringTimestamp.length() == 10 || stringTimestamp.length() == 13) {
+                        value = new java.util.Date(timestamp);
+                    } else {
+                        value = DateUtil.stringToDate(cursor.getString(index));
+                    }
                 }
                 break;
             case "java.math.BigDecimal":
