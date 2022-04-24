@@ -1,6 +1,6 @@
 ## Sqlbean For Android
 #### 介绍
-###### Sqlbean是一款使用Java面向对象思想来编写并生成Sql语句的工具，在此基础上对Mybatis和Spring Jdbc实现了类似于JPA的轻量级插件支持。其中内置大量常用SQL执行的方法，可以非常方便的达到你想要的目的，相对复杂的SQL语句也得以支持，在常规的项目开发几乎做到不写SQL，可以有效的提高项目开发的效率，让开发者更专注于业务代码的编写。
+###### Sqlbean是一款使用Java面向对象思想来编写并生成Sql语句的工具，在此基础上对Android SQLite实现轻量级插件支持。其中内置大量常用SQL执行的方法，可以非常方便的达到你想要的目的，相对复杂的SQL语句也得以支持，在常规的项目开发几乎做到不写SQL，可以有效的提高项目开发的效率，让开发者更专注于业务代码的编写。
 
 ###### 🚀特点: 零入侵, 自动建表, 连表查询, 乐观锁，分页
 ###### 💻环境: Android 4.0+
@@ -11,8 +11,8 @@
 
 
 ###### 1.引入Gradle依赖
-	implementation 'cn.vonce:vonce-sqlbean-android:1.0.5-beta10'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.0.5-beta10'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.1.0'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.1.0'
 ###### 2.标注实体类，实体类与表字段映射
 
 ```java
