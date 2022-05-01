@@ -56,13 +56,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         create.setTable(clazz);
                         String sql = SqlHelper.buildCreateSql(create);
                         db.execSQL(sql);
-                        Log.i("sqlbean", sql);
+                        Log.d("sqlbean", sql);
                     }
                 }
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Log.i("sqlbean", e.getMessage(), e);
+            Log.e("sqlbean", e.getMessage(), e);
         }
     }
 
