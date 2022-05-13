@@ -10,6 +10,8 @@ import cn.vonce.sql.config.SqlBeanDB;
 import cn.vonce.sql.enumerate.DbType;
 import cn.vonce.sql.exception.SqlBeanException;
 import cn.vonce.sql.helper.Wrapper;
+import cn.vonce.sql.page.PageHelper;
+import cn.vonce.sql.page.ResultData;
 import cn.vonce.sql.provider.SqlBeanProvider;
 import cn.vonce.sql.service.SqlBeanService;
 import cn.vonce.sql.service.TableService;
@@ -527,6 +529,32 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public int count(Class<?> clazz, Select select) {
         return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<Integer>(clazz, Integer.class));
+    }
+
+    @Override
+    public ResultData<T> paging(Select select, PageHelper<T> pageHelper) {
+        pageHelper.paging(select, this);
+        return pageHelper.getResultData();
+    }
+
+    @Override
+    public ResultData<T> paging(Select select, int pagenum, int pagesize) {
+        PageHelper<T> pageHelper = new PageHelper<>(pagenum, pagesize);
+        pageHelper.paging(select, this);
+        return pageHelper.getResultData();
+    }
+
+    @Override
+    public <R> ResultData<R> paging(Class<R> tClazz, Select select, PageHelper<R> pageHelper) {
+        pageHelper.paging(tClazz, select, this);
+        return pageHelper.getResultData();
+    }
+
+    @Override
+    public <R> ResultData<R> paging(Class<R> tClazz, Select select, int pagenum, int pagesize) {
+        PageHelper<R> pageHelper = new PageHelper<>(pagenum, pagesize);
+        pageHelper.paging(tClazz, select, this);
+        return pageHelper.getResultData();
     }
 
     @Override
