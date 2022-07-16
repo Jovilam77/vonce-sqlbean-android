@@ -17,7 +17,4 @@ public class SqlBeanHelper<T, ID> extends SqlBeanServiceImpl<T, ID> {
         super(clazz, databaseHelper);
     }
 
-    public SqlBeanHelper(DatabaseHelper databaseHelper) {
-        super(databaseHelper);
-    }
 }

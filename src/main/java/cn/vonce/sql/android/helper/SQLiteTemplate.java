@@ -3,15 +3,9 @@ package cn.vonce.sql.android.helper;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.vonce.sql.android.mapper.RowMapper;
-
-import static android.os.Build.VERSION.SDK_INT;
 
 /**
  * SQLite 执行sql模板
@@ -21,23 +15,6 @@ import static android.os.Build.VERSION.SDK_INT;
 public class SQLiteTemplate {
 
     private SQLiteDatabase db;
-
-    static {
-        //解决安卓9及以上无法进行反射调用非官网api的问题
-        if (SDK_INT >= 28) {
-            try {
-                Method forName = Class.class.getDeclaredMethod("forName", String.class);
-                Method getDeclaredMethod = Class.class.getDeclaredMethod("getDeclaredMethod", String.class, Class[].class);
-                Class<?> vmRuntimeClass = (Class<?>) forName.invoke(null, "dalvik.system.VMRuntime");
-                Method getRuntime = (Method) getDeclaredMethod.invoke(vmRuntimeClass, "getRuntime", null);
-                Method setHiddenApiExemptions = (Method) getDeclaredMethod.invoke(vmRuntimeClass, "setHiddenApiExemptions", new Class[]{String[].class});
-                Object sVmRuntime = getRuntime.invoke(null);
-                setHiddenApiExemptions.invoke(sVmRuntime, new Object[]{new String[]{"L"}});
-            } catch (Throwable e) {
-                Log.e("sqlbean", "reflect bootstrap failed:", e);
-            }
-        }
-    }
 
     public SQLiteTemplate(SQLiteDatabase db) {
         this.db = db;
@@ -79,29 +56,25 @@ public class SQLiteTemplate {
     }
 
     /**
-     * 执行sql(主要用于insert,update,delete)
+     * insert
+     *
+     * @param sql
+     * @return
+     */
+    public int insert(final String sql) {
+        Log.d("sqlbean", "updateSQL: " + sql);
+        return (int) db.compileStatement(sql).executeInsert();
+    }
+
+    /**
+     * update
      *
      * @param sql
      * @return
      */
     public int update(final String sql) {
-        int result = 0;
-        try {
-            Method method = db.getClass().getDeclaredMethod("executeSql", String.class, Object[].class);
-            method.setAccessible(true);
-            result = (int) method.invoke(db, sql, null);
-            Log.d("sqlbean", "update: " + sql);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            Log.e("sqlbean", e.getMessage());
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            Log.e("sqlbean", e.getMessage());
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            Log.e("sqlbean", e.getMessage());
-        }
-        return result;
+        Log.d("sqlbean", "updateSQL: " + sql);
+        return db.compileStatement(sql).executeUpdateDelete();
     }
 
     /**

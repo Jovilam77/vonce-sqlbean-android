@@ -38,6 +38,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        createTable(db);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (newVersion > oldVersion) {
+            createTable(db);
+        }
+    }
+
+    /**
+     * 创建表
+     *
+     * @param db
+     */
+    public void createTable(SQLiteDatabase db) {
         List<String> classNames = PackageUtil.getClasses(context, clazz.getPackage().getName());
         try {
             Create create;
@@ -49,12 +65,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 if (StringUtil.isEmpty(table.getSchema()) || table.getSchema().equals(dbName)) {
                     Class<?> clazz = Class.forName(className);
                     SqlTable sqlTable = clazz.getAnnotation(SqlTable.class);
-                    if (sqlTable == null || sqlTable.autoCreate()) {
+                    if (sqlTable != null && sqlTable.autoCreate()) {
                         create = new Create();
                         create.setSqlBeanDB(sqlBeanDB);
                         create.setBeanClass(clazz);
                         create.setTable(clazz);
                         String sql = SqlHelper.buildCreateSql(create);
+                        db.execSQL("DROP TABLE IF EXISTS " + SqlBeanUtil.getTableName(create.getTable(), create));
                         db.execSQL(sql);
                         Log.d("sqlbean", sql);
                     }
@@ -66,8 +83,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
 }

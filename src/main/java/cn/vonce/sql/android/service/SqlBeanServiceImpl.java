@@ -18,11 +18,14 @@ import cn.vonce.sql.service.TableService;
 import cn.vonce.sql.uitls.DateUtil;
 import cn.vonce.sql.uitls.SqlBeanUtil;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static android.os.Build.VERSION.SDK_INT;
 
 /**
  * 通用的业务实现
@@ -58,27 +61,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     public SqlBeanServiceImpl(Class<?> clazz, DatabaseHelper databaseHelper) {
         this.clazz = clazz;
         sqliteTemplate = new SQLiteTemplate(databaseHelper.getWritableDatabase());
-    }
-
-    public SqlBeanServiceImpl(DatabaseHelper databaseHelper) {
-        sqliteTemplate = new SQLiteTemplate(databaseHelper.getWritableDatabase());
-        if (this.clazz == null) {
-            Type[] typeArray = new Type[]{getClass().getGenericSuperclass()};
-            if (typeArray == null || typeArray.length == 0) {
-                typeArray = getClass().getGenericInterfaces();
-            }
-            for (Type type : typeArray) {
-                if (type instanceof ParameterizedType) {
-                    Class<?> trueTypeClass = (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
-                    try {
-                        clazz = this.getClass().getClassLoader().loadClass(trueTypeClass.getName());
-                        return;
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
     }
 
     public SQLiteTemplate getSQLiteTemplate() {
@@ -901,7 +883,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         if (bean == null || bean.length == 0) {
             throw new SqlBeanException("insert方法bean参数至少拥有一个值");
         }
-        return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, bean));
+        return sqliteTemplate.insert(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, bean));
     }
 
     @Override
@@ -909,12 +891,12 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         if (beanList == null || beanList.size() == 0) {
             throw new SqlBeanException("insert方法beanList参数至少拥有一个值");
         }
-        return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, beanList));
+        return sqliteTemplate.insert(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, beanList));
     }
 
     @Override
     public int insert(Insert insert) {
-        return sqliteTemplate.update(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, insert));
+        return sqliteTemplate.insert(SqlBeanProvider.insertBeanSql(getSqlBeanDB(), clazz, insert));
     }
 
 }
