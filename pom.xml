@@ -126,8 +126,7 @@
     <!-- 版本信息 -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vonce.sqlbean.core.version>1.1.4</vonce.sqlbean.core.version>
-        <com.google.guava.version>23.0-android</com.google.guava.version>
+        <vonce.sqlbean.core.version>1.1.5</vonce.sqlbean.core.version>
     </properties>
 
     <dependencies>
@@ -142,13 +141,6 @@
             <artifactId>android</artifactId>
             <version>26</version>
             <scope>provided</scope>
-        </dependency>
-        <!-- 谷歌工具类 -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${com.google.guava.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

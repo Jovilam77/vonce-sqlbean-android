@@ -17,15 +17,10 @@ import cn.vonce.sql.service.SqlBeanService;
 import cn.vonce.sql.service.TableService;
 import cn.vonce.sql.uitls.DateUtil;
 import cn.vonce.sql.uitls.SqlBeanUtil;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static android.os.Build.VERSION.SDK_INT;
 
 /**
  * 通用的业务实现
@@ -252,12 +247,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public T selectOneByCondition(String where, Object... args) {
-        return selectOneBy(where, args);
-    }
-
     @Override
     public T selectOneBy(String where, Object... args) {
         try {
@@ -267,12 +256,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
-    }
-
-    @Deprecated
-    @Override
-    public <R> R selectOneByCondition(Class<R> returnType, String where, Object... args) {
-        return selectOneBy(returnType, where, args);
     }
 
     @Override
@@ -289,23 +272,11 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public T selectOneByCondition(Wrapper wrapper) {
-        return selectOneBy(wrapper);
-    }
-
     @Override
     public T selectOneBy(Wrapper wrapper) {
         Select select = new Select();
         select.where(wrapper);
         return sqliteTemplate.queryForObject(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<T>(clazz, clazz));
-    }
-
-    @Deprecated
-    @Override
-    public <R> R selectOneByCondition(Class<R> returnType, Wrapper wrapper) {
-        return selectOneBy(returnType, wrapper);
     }
 
     @Override
@@ -323,12 +294,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public <R> List<R> selectByCondition(Class<R> returnType, String where, Object... args) {
-        return selectBy(returnType, where, args);
-    }
-
     @Override
     public <R> List<R> selectBy(Class<R> returnType, String where, Object... args) {
         try {
@@ -341,12 +306,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
-    }
-
-    @Deprecated
-    @Override
-    public <R> List<R> selectByCondition(Class<R> returnType, Wrapper wrapper) {
-        return selectBy(returnType, wrapper);
     }
 
     @Override
@@ -364,12 +323,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public <R> List<R> selectByCondition(Class<R> returnType, Paging paging, String where, Object... args) {
-        return selectBy(returnType, paging, where, args);
-    }
-
     @Override
     public <R> List<R> selectBy(Class<R> returnType, Paging paging, String where, Object... args) {
         try {
@@ -382,12 +335,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
-    }
-
-    @Deprecated
-    @Override
-    public <R> List<R> selectByCondition(Class<R> returnType, Paging paging, Wrapper wrapper) {
-        return selectBy(returnType, paging, wrapper);
     }
 
     @Override
@@ -407,12 +354,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public List<T> selectByCondition(String where, Object... args) {
-        return selectBy(where, args);
-    }
-
     @Override
     public List<T> selectBy(String where, Object... args) {
         try {
@@ -424,23 +365,11 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public List<T> selectByCondition(Wrapper wrapper) {
-        return selectBy(wrapper);
-    }
-
     @Override
     public List<T> selectBy(Wrapper where) {
         Select select = new Select();
         select.where(where);
         return sqliteTemplate.query(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<T>(clazz, clazz));
-    }
-
-    @Deprecated
-    @Override
-    public List<T> selectByCondition(Paging paging, String where, Object... args) {
-        return selectBy(paging, where, args);
     }
 
     @Override
@@ -454,12 +383,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public List<T> selectByCondition(Paging paging, Wrapper where) {
-        return selectBy(paging, where);
-    }
-
     @Override
     public List<T> selectBy(Paging paging, Wrapper where) {
         Select select = new Select();
@@ -469,21 +392,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.query(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<T>(clazz, clazz));
     }
 
-    @Deprecated
-    @Override
-    public int selectCountByCondition(String where, Object... args) {
-        return countBy(where, args);
-    }
-
     @Override
     public int countBy(String where, Object... args) {
         return sqliteTemplate.queryForObject(SqlBeanProvider.countByConditionSql(getSqlBeanDB(), clazz, where, args), new SqlBeanMapper<Integer>(clazz, Integer.class));
-    }
-
-    @Deprecated
-    @Override
-    public int selectCountByCondition(Wrapper where) {
-        return countBy(where);
     }
 
     @Override
@@ -493,21 +404,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.queryForObject(SqlBeanProvider.countSql(getSqlBeanDB(), clazz, select), new SqlBeanMapper<>(clazz, Integer.class));
     }
 
-    @Deprecated
-    @Override
-    public int countAll() {
-        return count();
-    }
-
     @Override
     public int count() {
         return sqliteTemplate.queryForObject(SqlBeanProvider.countByConditionSql(getSqlBeanDB(), clazz, null, null), new SqlBeanMapper<Integer>(clazz, Integer.class));
-    }
-
-    @Deprecated
-    @Override
-    public List<T> selectAll() {
-        return select();
     }
 
     @Override
@@ -521,12 +420,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         }
     }
 
-    @Deprecated
-    @Override
-    public List<T> selectAll(Paging paging) {
-        return select(paging);
-    }
-
     @Override
     public List<T> select(Paging paging) {
         try {
@@ -536,12 +429,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
-    }
-
-    @Deprecated
-    @Override
-    public <R> List<R> selectAll(Class<R> returnType) {
-        return select(returnType);
     }
 
     @Override
@@ -556,11 +443,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
             Log.e("sqlbean", e.getMessage(), e);
             return null;
         }
-    }
-
-    @Override
-    public <R> List<R> selectAll(Class<R> returnType, Paging paging) {
-        return select(returnType, paging);
     }
 
     @Override
@@ -659,21 +541,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.update(SqlBeanProvider.deleteByIdSql(getSqlBeanDB(), clazz, id));
     }
 
-    @Deprecated
-    @Override
-    public int deleteByCondition(String where, Object... args) {
-        return deleteBy(where, args);
-    }
-
     @Override
     public int deleteBy(String where, Object... args) {
         return sqliteTemplate.update(SqlBeanProvider.deleteByConditionSql(getSqlBeanDB(), clazz, where, args));
-    }
-
-    @Deprecated
-    @Override
-    public int deleteByCondition(Wrapper where) {
-        return deleteBy(where);
     }
 
     @Override
@@ -701,21 +571,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.update(SqlBeanProvider.logicallyDeleteByIdSql(getSqlBeanDB(), clazz, id));
     }
 
-    @Deprecated
-    @Override
-    public int logicallyDeleteByCondition(String where, Object... args) {
-        return logicallyDeleteBy(where, args);
-    }
-
     @Override
     public int logicallyDeleteBy(String where, Object... args) {
         return sqliteTemplate.update(SqlBeanProvider.logicallyDeleteByConditionSql(getSqlBeanDB(), clazz, where, args));
-    }
-
-    @Deprecated
-    @Override
-    public int logicallyDeleteByCondition(Wrapper where) {
-        return logicallyDeleteBy(where);
     }
 
     @Override
@@ -753,12 +611,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.update(SqlBeanProvider.updateByIdSql(getSqlBeanDB(), clazz, bean, id, updateNotNull, optimisticLock, filterFields));
     }
 
-    @Deprecated
-    @Override
-    public int updateByCondition(T bean, String where, Object... args) {
-        return updateBy(bean, where, args);
-    }
-
     @Override
     public int updateBy(T bean, String where, Object... args) {
         return sqliteTemplate.update(SqlBeanProvider.updateByConditionSql(getSqlBeanDB(), clazz, bean, true, false, null, where, args));
@@ -774,21 +626,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.update(SqlBeanProvider.updateByBeanIdSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, filterFields));
     }
 
-    @Deprecated
-    @Override
-    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, String where, Object... args) {
-        return updateBy(bean, updateNotNull, optimisticLock, where, args);
-    }
-
     @Override
     public int updateBy(T bean, boolean updateNotNull, boolean optimisticLock, String where, Object... args) {
         return sqliteTemplate.update(SqlBeanProvider.updateByConditionSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, null, where, args));
-    }
-
-    @Deprecated
-    @Override
-    public int updateByCondition(T bean, Wrapper where) {
-        return updateBy(bean, where);
     }
 
     @Override
@@ -801,12 +641,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
-    @Deprecated
-    @Override
-    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, Wrapper where) {
-        return updateBy(bean, updateNotNull, optimisticLock, where);
-    }
-
     @Override
     public int updateBy(T bean, boolean updateNotNull, boolean optimisticLock, Wrapper where) {
         Update update = new Update();
@@ -817,21 +651,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
-    @Deprecated
-    @Override
-    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields, String where, Object... args) {
-        return updateBy(bean, updateNotNull, optimisticLock, filterFields, where, args);
-    }
-
     @Override
     public int updateBy(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields, String where, Object... args) {
         return sqliteTemplate.update(SqlBeanProvider.updateByConditionSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, filterFields, where, args));
-    }
-
-    @Deprecated
-    @Override
-    public int updateByCondition(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields, Wrapper where) {
-        return updateBy(bean, updateNotNull, optimisticLock, filterFields, where);
     }
 
     @Override
@@ -845,32 +667,14 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
-    @Deprecated
-    @Override
-    public int updateByBeanCondition(T bean, String where) {
-        return updateByBean(bean, where);
-    }
-
     @Override
     public int updateByBean(T bean, String where) {
         return sqliteTemplate.update(SqlBeanProvider.updateByBeanConditionSql(getSqlBeanDB(), clazz, bean, true, false, null, where));
     }
 
-    @Deprecated
-    @Override
-    public int updateByBeanCondition(T bean, boolean updateNotNull, boolean optimisticLock, String where) {
-        return updateByBean(bean, updateNotNull, optimisticLock, where);
-    }
-
     @Override
     public int updateByBean(T bean, boolean updateNotNull, boolean optimisticLock, String where) {
         return sqliteTemplate.update(SqlBeanProvider.updateByBeanConditionSql(getSqlBeanDB(), clazz, bean, updateNotNull, optimisticLock, null, where));
-    }
-
-    @Deprecated
-    @Override
-    public int updateByBeanCondition(T bean, boolean updateNotNull, boolean optimisticLock, String[] filterFields, String where) {
-        return updateByBean(bean, updateNotNull, optimisticLock, filterFields, where);
     }
 
     @Override
