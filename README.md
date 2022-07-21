@@ -1,53 +1,47 @@
 ## Sqlbean For Android
+
 #### 介绍
+
 ###### Sqlbean是一款使用Java面向对象思想来编写并生成Sql语句的工具，在此基础上对Android SQLite实现轻量级插件支持。其中内置大量常用SQL执行的方法，可以非常方便的达到你想要的目的，相对复杂的SQL语句也得以支持，在常规的项目开发几乎做到不写SQL，可以有效的提高项目开发的效率，让开发者更专注于业务代码的编写。
 
 ###### 🚀特点: 零入侵, 自动建表, 连表查询, 乐观锁，分页
+
 ###### 💻环境: Android 4.0+
 
 ###### Sqlbean-Core与Java-Spring版请移步这里👉 [gitee](https://gitee.com/iJovi/vonce-sqlbean "vonce-sqlbean"), [github](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
 
 #### 简单上手
 
-
 ###### 1.引入Gradle依赖
+
 	implementation 'cn.vonce:vonce-sqlbean-android:1.1.7'
 	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.1.7'
+
 ###### 2.标注实体类，实体类与表字段映射
 
 ```java
-@SqlTable("d_essay")
-public class Essay {
 
-    //标识id字段
-    @SqlId(type = IdType.UUID)
-    //@SqlColumn("id")
-    private String id;
-
-    //@SqlColumn("user_id")
-    private String userId;
-
-    //@SqlColumn("content")
-    private String content;
-
-    //@SqlColumn("creation_time")
-    private Date creationTime;
-
-    //标识乐观锁字段
-    @SqlVersion
-    //@SqlColumn("update_time")
-    private Date updateTime;
-	
-	/**省略get set方法*/
-	
+@SqlTable("d_user")
+public class User {
+    @SqlId(type = IdType.SNOWFLAKE_ID_16)
+    private Long id;
+    private String name;
+    private Integer age;
+    private Integer stature;
+    private Integer gender;
+    private String phone;
+    private Date createTime;
+    /**省略get set方法*/
 }
 ```
+
 ###### 3.获取连接（建议在上一步把所有表字段关系建立好，第一次获取连接时会自动创建表结构）
+
 ```java
 public class MainActivity extends AppCompatActivity {
 
     private SqlBeanHelper<Essay, String> essaySqlBeanHelper;
-	//private SqlBeanHelper<User, String> userSqlBeanHelper;
+    //private SqlBeanHelper<User, String> userSqlBeanHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +59,13 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
+
 ###### 4.CRUD操作
+
 ```java
 
 public class MainActivity extends AppCompatActivity {
-	
+
     private SqlBeanHelper<Essay, String> sqlBeanHelper;
 
     @Override
@@ -82,103 +78,92 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-	//查询
-	public void select() {
-        
+    //查询
+    public void select() {
         //查询列表
-        List<Essay> list = essayService.selectAll();
-        //list = sqlBeanHelper.selectByCondition("& > ?", $Essay.id, 20);
-        list = sqlBeanHelper.selectByCondition(Wrapper.where(gt($Essay.id, 10)).and(lt($Essay.id, 20)));
+        List<User> list = userService.select();
+        list = sqlBeanHelper.selectBy(Wrapper.where(gt(User$.id, 10)).and(lt(User$.id, 20)));
+        //指定查询
+        list = sqlBeanHelper.select(new Select().column(User$.id$, User$.name$, User$.phone).where().eq());
 
         //查询一条
-        Essay essay = sqlBeanHelper.selectById(1L);
-        //essay = sqlBeanHelper.selectOneByCondition("& = ?", $Essay.id, 1);
-        essay = sqlBeanHelper.selectOneByCondition(Wrapper.where(eq($Essay.id, 333)));
+        User user = userService.selectById(1);
+        user = sqlBeanHelper.selectOneBy(Wrapper.where(eq(User$.id, 1001)));
 
-        //复杂查询
+        //sql语义化查询《20岁且是女性的用户根据创建时间倒序，获取前10条》
+        list = sqlBeanHelper.select(new Select().column(User$.id$, User$.name$, User$.phone$).where().eq(User$.age, 22).and().eq(User$.gender, 0).back().orderByDesc(User$.createTime).page(0, 10));
+
+        //联表查询《20岁且是女性的用户根据创建时间倒序，查询前10条用户的信息和地址》
         Select select = new Select();
-        select.column(SqlEssay.id).column($Essay.content);
-        //指定查询的表 可不写
-        //select.setTable(Essay.class);
-        //看需求指定连表 这里不演示
-        //select.join("","");
-        select.where().gt("id", 1).and().eq("content", "222");
-        //复杂条件推荐使用
-        //select.setWhere(Wrapper.where(gt($Essay.id, 1)).and(eq($Essay.content, "222")));
-        //也可使用表达式 如果这三种条件同时出现 那么此方式优先级最高 上面包装器次之
-        //select.setWhere("& = ? AND & = ?", $Essay.id, 1, $Essay.content, "222");
-        select.orderBy("id", SqlSort.DESC);
-        list = sqlBeanHelper.select(select);
+        select.column(User$.id$, User$.name$, User$.phone$, UserAddress$.province$, UserAddress$.city$, UserAddress$.area$, UserAddress$.details$);
+        select.join(JoinType.INNER_JOIN, UserAddress$._tableName, UserAddress$.user_id, User$.id);
+        select.where().gt(User$.age$, 22).and().eq(User$.gender$, 0);
+        select.orderByDesc(User$.createTime$);
+        select.page(0, 10);
 
-        //用于查询Map
+        //查询Map
         Map<String, Object> map = sqlBeanHelper.selectMap(select);
-
-        //用于查询Map列表
         List<Map<String, Object>> mapList = sqlBeanHelper.selectMapList(select);
-        
-	}
+    }
 
-	//分页
-	public void getList(HttpServletRequest request) {
-        
-		// 查询对象
+    //分页
+    public void getPageList() {
+        // 查询对象
         Select select = new Select();
-        PageHelper<Essay> pageHelper = new PageHelper<>(0,1);
+        PageHelper<User> pageHelper = new PageHelper<>(0, 10);
         pageHelper.paging(select, sqlBeanHelper);
         ResultData<List<Essay>> data = pageHelper.getResultData();
-        
-        // 或者这样
-        // data = new PageHelper<Essay>(0,1).paging(new Select(),sqlBeanHelper).toResult.getResultData();
-        
-        //又或者 更简便的用法（不带统计和页数信息）
-        //List<Essay> list = sqlBeanHelper.selectByCondition(new Paging(0,10), Wrapper.where(Cond.gt(SqlEssay.id, 10)).and(Cond.lt(SqlEssay.id, 20)));
-	}
+    }
 
-	//更新
-	public void update(Essay essay) {
-        
+    //更新
+    public void update(Essay essay) {
         //根据bean内部id更新
         long i = sqlBeanHelper.updateByBeanId(essay);
         //根据外部id更新
         //i = sqlBeanHelper.updateById(essay, 20);
         //根据条件更新
-        //i = sqlBeanHelper.updateByCondition(essay, Wrapper.where(gt($Essay.id, 1)).and(eq($Essay.content, "222")));
-        
-	}
+        //i = sqlBeanHelper.updateBy(Wrapper.where(gt(User$.age, 22)).and(eq(User$.gender, 1)));
+    }
 
-	//删除
-	public void deleteById(String[] id) {
-        
+    //删除
+    public void deleteById(String[] id) {
         //根据id删除
         long i = sqlBeanHelper.deleteById(id);
         //根据条件删除
-        //i = sqlBeanHelper.deleteByCondition(Wrapper.where(gt($Essay.id, 1)).and(eq($Essay.content, "222")));
-
+        //i = sqlBeanHelper.deleteBy(Wrapper.where(gt(User$.age, 22)).and(eq(User$.gender, 1)));
     }
 
-	//插入
-	public void add() {
-        
-		List<Essay> essayList = new ArrayList<>();
-		for (int i = 0; i < 100; i++) {
-			Essay essay = new Essay(i, "name" + i);
-			essayList.add(essay);
-		}
+    //插入
+    public void add() {
+        List<Essay> essayList = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            Essay essay = new Essay(i, "name" + i);
+            essayList.add(essay);
+        }
         sqlBeanHelper.insert(essayList);
-        
-	}
+    }
 
 }
 ```
+
 ##### 👇👇👇更多用法请查看下方文档👇👇👇
 
 ###### [0️⃣. 注解详情与使用](doc/Annotation.md "注解详情与使用")
+
 ###### [1️⃣. Select](doc/Select.md "Select")
+
 ###### [2️⃣. Insert](doc/Insert.md "Insert")
+
 ###### [3️⃣. Delete](doc/Delete.md "Delete")
+
 ###### [4️⃣. Update](doc/Update.md "Update")
+
 ###### [5️⃣. 表操作相关](doc/Table.md "表操作相关")
+
 ###### [6️⃣. 分页查询](doc/Paging.md "分页查询")
+
 ###### [7️⃣. Service接口和实现类](doc/Interface.md "Service接口和实现类")
+
 ###### [8️⃣. SqlBean和SqlHelper](doc/SqlHelper.md "SqlBean和SqlHelper")
+
 ###### [9️⃣. Where条件和包装器](doc/Where.md "Where条件和包装器")
