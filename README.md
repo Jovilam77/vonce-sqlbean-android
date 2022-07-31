@@ -14,8 +14,8 @@
 
 ###### 1.引入Gradle依赖
 
-	implementation 'cn.vonce:vonce-sqlbean-android:1.1.7'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.1.7'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.1.8'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.1.8'
 
 ###### 2.标注实体类，实体类与表字段映射
 

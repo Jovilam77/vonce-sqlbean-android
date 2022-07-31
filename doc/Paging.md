@@ -37,8 +37,8 @@ public ResultData<List<Essay>> getList(int pagenum,int pagesize) {
 	//如果你有条件则用这个
 	//String sql = "(id > ? and id < ?) or type = ?";
 	//Object[] args = new Object[]{1, 10, "军事"};
-	//pageHelper.dispose(sqlBeanService.selectCountByCondition(sql, args));
-	//pageHelper.setDataList(sqlBeanService.selectByCondition(pageHelper.getPaging(), sql, args));
+	//pageHelper.dispose(sqlBeanService.selectCountBy(sql, args));
+	//pageHelper.setDataList(sqlBeanService.selectBy(pageHelper.getPaging(), sql, args));
 	return pageHelper.getResultData("获取文章列表成功");
 }
 ```
@@ -51,6 +51,6 @@ public List<Essay> getList(int pagenum,int pagesize) {
 	//如果你有条件则用这个
 	//String sql = "(id > ? and id < ?) or type = ?";
 	//Object[] args = new Object[]{1, 10, "军事"};
-	//return sqlBeanService.selectByCondition(pageHelper.getPaging(), sql, args);
+	//return sqlBeanService.selectBy(pageHelper.getPaging(), sql, args);
 }
 ```
