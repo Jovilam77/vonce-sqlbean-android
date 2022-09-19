@@ -99,42 +99,42 @@ public Map<String,Object> getEssay() {
 ```
 ###### 8：根据条件查询
 ```java
-T selectOneByCondition(String where, Object... args);
+T selectOneBy(String where, Object... args);
 ```
 ```java
 public Essay getEssay() {
-	Essay essay = essayService.selectOneByCondition("id = ?",1);
+	Essay essay = essayService.selectOneBy("id = ?",1);
 	return essay;
 }
 ```
 ###### 9：根据条件查询（指定返回类型）
 ```java
-<O> O selectOneByCondition(Class<O> returnType, String where, Object... args);
+<O> O selectOneBy(Class<O> returnType, String where, Object... args);
 ```
 ```java
 public EssayUnion getEssay() {
-	EssayUnion essayUnion = essayService.selectOneByCondition(EssayUnion.class, "id = ?",1);
+	EssayUnion essayUnion = essayService.selectOneBy(EssayUnion.class, "id = ?",1);
 	//也可以这样使用
 	//返回第一个字段内容，可以用你想要的类型接收
-	//String id = essayService.selectOneByCondition(String.class, "id = ?",1);
+	//String id = essayService.selectOneBy(String.class, "id = ?",1);
 	//返回Map
-	//Map<String,Object> map = essayService.selectOneByCondition(Map.class, "id = ?",1);
+	//Map<String,Object> map = essayService.selectOneBy(Map.class, "id = ?",1);
 	return essayUnion;
 }
 ```
 ###### 10：根据条件查询
 ```java
-List<T> selectByCondition(String where, Object... args);
+List<T> selectBy(String where, Object... args);
 ```
 ```java
 public List<Essay> getEssay() {
-	List<Essay> essayList = essayService.selectByCondition("userId = ?",888);
+	List<Essay> essayList = essayService.selectBy("userId = ?",888);
 	return essayList;
 }
 ```
 ###### 11：根据条件查询 分页
 ```java
-List<T> selectByCondition(Paging paging, String where, Object... args);
+List<T> selectBy(Paging paging, String where, Object... args);
 ```
 ```java
 public List<Essay> getEssay() {
@@ -142,31 +142,31 @@ public List<Essay> getEssay() {
 	Paging paging = new Paging(0,10,"creationTime","desc");
 	//PageHelper<Essay> pageHelper = new PageHelper<>(0,10,null);
 	//Paging paging = pageHelper.getPaging()
-	List<Essay> essayList = essayService.selectByCondition(paging,"userId = ?",888);
+	List<Essay> essayList = essayService.selectBy(paging,"userId = ?",888);
 	return essayList;
 }
 ```
 ###### 12：根据条件查询（指定返回类型）
 ```java
-<O> List<O> selectByCondition(Class<O> returnType, String where, Object... args);
+<O> List<O> selectBy(Class<O> returnType, String where, Object... args);
 ```
 ```java
 public List<EssayUnion> getEssay() {
-	List<EssayUnion> essayUnionList = essayService.selectByCondition(EssayUnion.class,
+	List<EssayUnion> essayUnionList = essayService.selectBy(EssayUnion.class,
 	"userId = ?",888);
 	//也可以这样使用
 	//返回第一个字段内容，可以用你想要的类型接收
-	//List<String> idList = essayService.selectByCondition(String.class,
+	//List<String> idList = essayService.selectBy(String.class,
 	"userId = ?",888);
 	//返回Map
-	//List<Map<String,Object>> mapList = essayService.selectByCondition(Map.class,
+	//List<Map<String,Object>> mapList = essayService.selectBy(Map.class,
 	"userId = ?",888);
 	return essayUnionList;
 }
 ```
 ###### 13：根据条件查询 分页（指定返回类型）
 ```java
-<O> List<O> selectByCondition(Class<O> returnType, Paging paging, String where, Object... args);
+<O> List<O> selectBy(Class<O> returnType, Paging paging, String where, Object... args);
 ```
 ```java
 public List<EssayUnion> getEssay() {
@@ -174,25 +174,25 @@ public List<EssayUnion> getEssay() {
 	Paging paging = new Paging(0,10,"creationTime","desc");
 	//PageHelper<Essay> pageHelper = new PageHelper<>(request);
 	//Paging paging = pageHelper.getPaging()
-	List<EssayUnion> essayUnionList = essayService.selectByCondition(EssayUnion.class, paging, 
+	List<EssayUnion> essayUnionList = essayService.selectBy(EssayUnion.class, paging, 
 	"userId = ?",888);
 	//也可以这样使用
 	//返回第一个字段内容，可以用你想要的类型接收
-	//List<String> idList = essayService.selectByCondition(String.class, paging, 
+	//List<String> idList = essayService.selectBy(String.class, paging, 
 	"userId = ?",888);
 	//返回Map
-	//List<Map<String,Object>> mapList = essayService.selectByCondition(Map.class, paging, 
+	//List<Map<String,Object>> mapList = essayService.selectBy(Map.class, paging, 
 	"userId = ?",888);
 	return essayUnionList;
 }
 ```
 ###### 14：根据条件查询统计
 ```java
-long selectCountByCondition(String where, Object... args);
+long selectCountBy(String where, Object... args);
 ```
 ```java
 public long getEssay() {
-	long count = essayService.selectCountByCondition("userId = ?",888);
+	long count = essayService.selectCountBy("userId = ?",888);
 	return count;
 }
 ```
