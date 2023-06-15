@@ -14,8 +14,8 @@
 
 ###### 1.引入Gradle依赖
 
-	implementation 'cn.vonce:vonce-sqlbean-android:1.1.9'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.1.9'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.2.0-beta1'
+	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.2.0-beta1'
 
 ###### 2.标注实体类，实体类与表字段映射
 
@@ -82,23 +82,23 @@ public class MainActivity extends AppCompatActivity {
     public void select() {
         //查询列表
         List<User> list = userService.select();
-        list = sqlBeanHelper.selectBy(Wrapper.where(gt(User$.id, 10)).and(lt(User$.id, 20)));
+        list = sqlBeanHelper.selectBy(Wrapper.where(Cond.gt(User::getId, 10)).and(Cond.lt(User::getId, 20)));
         //指定查询
-        list = sqlBeanHelper.select(new Select().column(User$.id$, User$.name$, User$.phone).where().eq());
+        list = sqlBeanHelper.select(new Select().column(User::getId, User::getName, User::getPhone).where().gt(User::getId, 10));
 
         //查询一条
         User user = userService.selectById(1);
-        user = sqlBeanHelper.selectOneBy(Wrapper.where(eq(User$.id, 1001)));
+        user = sqlBeanHelper.selectOneBy(Wrapper.where(eq(User::getId, 1001)));
 
         //sql语义化查询《20岁且是女性的用户根据创建时间倒序，获取前10条》
-        list = sqlBeanHelper.select(new Select().column(User$.id$, User$.name$, User$.phone$).where().eq(User$.age, 22).and().eq(User$.gender, 0).back().orderByDesc(User$.createTime).page(0, 10));
+        list = sqlBeanHelper.select(new Select().column(User::getId, User::getName, User::getPhone).where().eq(User::getAge, 22).and().eq(User::getGender, 0).back().orderByDesc(User::getCreateTime).page(0, 10));
 
         //联表查询《20岁且是女性的用户根据创建时间倒序，查询前10条用户的信息和地址》
         Select select = new Select();
-        select.column(User$.id$, User$.name$, User$.phone$, UserAddress$.province$, UserAddress$.city$, UserAddress$.area$, UserAddress$.details$);
-        select.join(JoinType.INNER_JOIN, UserAddress$._tableName, UserAddress$.user_id, User$.id);
-        select.where().gt(User$.age$, 22).and().eq(User$.gender$, 0);
-        select.orderByDesc(User$.createTime$);
+        select.column(User::getId, User::getName, User::getPhone, UserAddress::getProvince, UserAddress::getCity, UserAddress::getArea, UserAddress::getDetails);
+        select.innerJoin(UserAddress.class).on().eq(UserAddress::getId, User::getId);
+        select.where().gt(User::getAge, 22).and().eq(User::getGender, 0);
+        select.orderByDesc(User::getCreateTime);
         select.page(0, 10);
 
         //查询Map
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         //根据外部id更新
         //i = sqlBeanHelper.updateById(essay, 20);
         //根据条件更新
-        //i = sqlBeanHelper.updateBy(Wrapper.where(gt(User$.age, 22)).and(eq(User$.gender, 1)));
+        //i = sqlBeanHelper.update(new Update<User>().set(User::getGender, 1).set(User::getName, "Jovi").setAdd(User::getAge, User::getAge, 1).where().eq(User::getId, 111).back());
     }
 
     //删除
@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         //根据id删除
         long i = sqlBeanHelper.deleteById(id);
         //根据条件删除
-        //i = sqlBeanHelper.deleteBy(Wrapper.where(gt(User$.age, 22)).and(eq(User$.gender, 1)));
+        //i = sqlBeanHelper.deleteBy(Wrapper.where(gt(User::getAge, 22)).and(eq(User::getGender, 1)));
     }
 
     //插入
