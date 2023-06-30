@@ -1,7 +1,7 @@
 package cn.vonce.sql.android.helper;
 
 import android.content.Context;
-import cn.vonce.sql.helper.SqlHelper;
+import cn.vonce.sql.uitls.SqlBeanUtil;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -73,7 +73,7 @@ public class SQLiteHelper {
      * @return
      */
     public static SQLiteHelper db() {
-        SqlHelper.isNull(defaultSqLiteHelper, "请初始化默认数据库");
+        SqlBeanUtil.isNull(defaultSqLiteHelper, "请初始化默认数据库");
         return defaultSqLiteHelper;
     }
 
@@ -89,7 +89,7 @@ public class SQLiteHelper {
             if (databaseHelper == null) {
                 databaseHelper = new DatabaseHelper(clazz, context, name, null, version);
             }
-            sqlBeanHelper = new SqlBeanHelper<>(clazz, databaseHelper);
+            sqlBeanHelper = new SqlBeanHelper<>(clazz, context, databaseHelper);
             sqlBeanHelperMap.put(clazz, sqlBeanHelper);
         }
         return sqlBeanHelper;
