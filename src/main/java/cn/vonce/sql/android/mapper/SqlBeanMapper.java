@@ -48,7 +48,7 @@ public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
             if (SqlBeanUtil.isMap(returnType.getName())) {
                 return (T) mapHandleResultSet(cursor);
             }
-            return (T) beanHandleResultSet(clazz, cursor, getColumnNameList(cursor));
+            return (T) beanHandleResultSet(returnType, cursor, getColumnNameList(cursor));
         }
         return (T) object;
     }

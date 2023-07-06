@@ -263,7 +263,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public <R> R selectOne(Class<R> returnType, Select select) {
         try {
-
             return sqliteTemplate.queryForObject(SqlBeanProvider.selectSql(getSqlBeanDB(), clazz, returnType, select), new SqlBeanMapper<R>(clazz, returnType));
         } catch (Exception e) {
             Log.e("sqlbean", e.getMessage(), e);
