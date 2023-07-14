@@ -78,7 +78,7 @@
                 </executions>
             </plugin>
             <!--gpg加密插件-->
-            <!--<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.5</version>
@@ -91,7 +91,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -120,13 +120,13 @@
 
     <artifactId>vonce-sqlbean-android</artifactId>
     <groupId>cn.vonce</groupId>
-    <version>1.2.0-beta6</version>
+    <version>1.2.0-beta7</version>
     <packaging>jar</packaging>
 
     <!-- 版本信息 -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vonce.sqlbean.core.version>1.2.0-beta16</vonce.sqlbean.core.version>
+        <vonce.sqlbean.core.version>1.2.0-beta17</vonce.sqlbean.core.version>
     </properties>
 
     <dependencies>
