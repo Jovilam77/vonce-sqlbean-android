@@ -197,6 +197,11 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     }
 
     @Override
+    public int alterRemarks(String remarks) {
+        return 0;
+    }
+
+    @Override
     public T selectById(ID id) {
         if (id == null) {
             return null;
