@@ -45,7 +45,7 @@ public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
             if (SqlBeanUtil.isBaseType(returnType)) {
                 return (T) baseHandleResultSet(cursor);
             }
-            if (SqlBeanUtil.isMap(returnType.getName())) {
+            if (SqlBeanUtil.isMap(returnType)) {
                 return (T) mapHandleResultSet(cursor);
             }
             return (T) beanHandleResultSet(returnType, cursor, getColumnNameList(cursor));
@@ -59,7 +59,7 @@ public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
         Object value;
         value = getValue(cursor.getType(0), 0, cursor);
         if (value != null && !value.getClass().getName().equals(returnType.getName())) {
-            value = getValueConvert(returnType.getName(), value);
+            value = SqlBeanUtil.getValueConvert(returnType, value);
         }
         if (value == null || value.equals("null")) {
             value = getDefaultValueByColumnType(cursor.getType(0));
