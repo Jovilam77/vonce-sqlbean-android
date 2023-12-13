@@ -94,8 +94,18 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     }
 
     @Override
+    public List<TableInfo> getTableList(String schema, String tableName) {
+        return this.getTableList(tableName);
+    }
+
+    @Override
     public List<ColumnInfo> getColumnInfoList(String tableName) {
         return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), null, null), new SqlBeanMapper<ColumnInfo>(clazz, ColumnInfo.class));
+    }
+
+    @Override
+    public List<ColumnInfo> getColumnInfoList(String schema, String tableName) {
+        return this.getColumnInfoList(tableName);
     }
 
     @Override
