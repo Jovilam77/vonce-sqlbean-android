@@ -48,6 +48,11 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
         return sqlBeanDB;
     }
 
+    @Override
+    public TableService<T> operation() {
+        return this;
+    }
+
     public Class<?> clazz;
 
     public SqlBeanServiceImpl() {
@@ -69,7 +74,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
 
     @Override
     public void dropTable() {
-        SqlBeanDB sqlBeanDB = getSqlBeanDB();
         List<String> nameList = sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), null, SqlBeanUtil.getTable(clazz).getName()), new SqlBeanMapper<String>(clazz, String.class));
         if (nameList == null || nameList.isEmpty()) {
             return;
@@ -89,6 +93,11 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     }
 
     @Override
+    public List<TableInfo> getTableList() {
+        return this.getTableList(null);
+    }
+
+    @Override
     public List<TableInfo> getTableList(String tableName) {
         return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), null, null), new SqlBeanMapper<TableInfo>(clazz, TableInfo.class));
     }
@@ -96,6 +105,11 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public List<TableInfo> getTableList(String schema, String tableName) {
         return this.getTableList(tableName);
+    }
+
+    @Override
+    public List<ColumnInfo> getColumnInfoList() {
+        return this.getColumnInfoList(null);
     }
 
     @Override
@@ -111,18 +125,23 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
     @Override
     public String backup() {
         String targetTableName = SqlBeanUtil.getTable(clazz).getName() + "_" + DateUtil.dateToString(new Date(), "yyyyMMddHHmmssSSS");
-        sqliteTemplate.update(SqlBeanProvider.backupSql(getSqlBeanDB(), clazz, null, targetTableName, null, null));
+        sqliteTemplate.update(SqlBeanProvider.backupSql(getSqlBeanDB(), clazz, null, null, targetTableName, null));
         return targetTableName;
     }
 
     @Override
     public void backup(String targetTableName) {
-        sqliteTemplate.update(SqlBeanProvider.backupSql(getSqlBeanDB(), clazz, null, targetTableName, null, null));
+        sqliteTemplate.update(SqlBeanProvider.backupSql(getSqlBeanDB(), clazz, null, null, targetTableName, null));
     }
 
     @Override
     public void backup(String targetSchema, String targetTableName) {
         sqliteTemplate.update(SqlBeanProvider.backupSql(getSqlBeanDB(), clazz, null, targetSchema, targetTableName, null));
+    }
+
+    @Override
+    public void backup(Wrapper wrapper, String targetSchema, String targetTableName) {
+        sqliteTemplate.update(SqlBeanProvider.backupSql(getSqlBeanDB(), clazz, wrapper, null, targetTableName, null));
     }
 
     @Override
