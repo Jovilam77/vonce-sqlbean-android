@@ -14,8 +14,8 @@ import cn.vonce.sql.helper.Wrapper;
 import cn.vonce.sql.page.PageHelper;
 import cn.vonce.sql.page.ResultData;
 import cn.vonce.sql.provider.SqlBeanProvider;
+import cn.vonce.sql.service.DbManageService;
 import cn.vonce.sql.service.SqlBeanService;
-import cn.vonce.sql.service.TableService;
 import cn.vonce.sql.uitls.DateUtil;
 import cn.vonce.sql.uitls.SqlBeanUtil;
 
@@ -31,7 +31,7 @@ import java.util.*;
  * @email imjovi@qq.com
  * @date 2019年5月22日下午16:20:12
  */
-public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableService<T> {
+public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, DbManageService<T> {
 
 
     private SQLiteTemplate sqliteTemplate;
@@ -46,11 +46,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
             sqlBeanDB.setSqlBeanConfig(new SqlBeanConfig());
         }
         return sqlBeanDB;
-    }
-
-    @Override
-    public TableService<T> operation() {
-        return this;
     }
 
     public Class<?> clazz;
@@ -223,11 +218,6 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, TableSe
             }
         }
         return count;
-    }
-
-    @Override
-    public int alterRemarks(String remarks) {
-        return 0;
     }
 
     @Override
