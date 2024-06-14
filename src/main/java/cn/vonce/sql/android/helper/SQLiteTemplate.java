@@ -6,6 +6,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import cn.vonce.sql.android.mapper.RowMapper;
+import cn.vonce.sql.mapper.ResultSetDelegate;
 
 /**
  * SQLite 执行sql模板
@@ -30,12 +31,12 @@ public class SQLiteTemplate {
      */
     public <T> List<T> query(String sql, RowMapper<T> rowMapper) {
         List<T> list = new ArrayList<>();
-        Cursor cursor = db.rawQuery(sql, null);
+        ResultSetDelegate<Cursor> resultSetDelegate = new ResultSetDelegate<>(db.rawQuery(sql, null));
         Log.d("sqlbean", "query: " + sql);
-        for (int i = 0; i < cursor.getCount(); i++) {
-            list.add(rowMapper.mapRow(cursor, i));
+        for (int i = 0; i < resultSetDelegate.getDelegate().getCount(); i++) {
+            list.add(rowMapper.mapRow(resultSetDelegate, i));
         }
-        cursor.close();
+        resultSetDelegate.getDelegate().close();
         return list;
     }
 
@@ -50,7 +51,7 @@ public class SQLiteTemplate {
     public <T> T queryForObject(String sql, RowMapper<T> rowMapper) {
         Cursor cursor = db.rawQuery(sql, null);
         Log.d("sqlbean", "queryForObject: " + sql);
-        T t = rowMapper.mapRow(cursor, 0);
+        T t = rowMapper.mapRow(new ResultSetDelegate<>(cursor), 0);
         cursor.close();
         return t;
     }
