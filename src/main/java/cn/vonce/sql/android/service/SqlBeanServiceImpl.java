@@ -659,22 +659,16 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, DbManag
     }
 
     @Override
-    public int updateBy(T bean, Wrapper where) {
+    public int updateBy(T bean, Wrapper wrapper) {
         Update update = new Update();
-        update.setUpdateBean(bean);
-        update.setUpdateNotNull(true);
-        update.setOptimisticLock(false);
-        update.where(where);
+        update.bean(bean).notNull(true).optimisticLock(false).where(wrapper);
         return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
     @Override
-    public int updateBy(T bean, boolean updateNotNull, boolean optimisticLock, Wrapper where) {
+    public int updateBy(T bean, boolean updateNotNull, boolean optimisticLock, Wrapper wrapper) {
         Update update = new Update();
-        update.setUpdateBean(bean);
-        update.setUpdateNotNull(updateNotNull);
-        update.setOptimisticLock(optimisticLock);
-        update.where(where);
+        update.bean(bean).notNull(updateNotNull).optimisticLock(optimisticLock).where(wrapper);
         return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
@@ -684,13 +678,9 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, DbManag
     }
 
     @Override
-    public int updateBy(T bean, boolean updateNotNull, boolean optimisticLock, Wrapper where, Column... filterColumns) {
+    public int updateBy(T bean, boolean updateNotNull, boolean optimisticLock, Wrapper wrapper, Column... filterColumns) {
         Update update = new Update();
-        update.setUpdateBean(bean);
-        update.setUpdateNotNull(updateNotNull);
-        update.setOptimisticLock(optimisticLock);
-        update.filterFields(filterColumns);
-        update.where(where);
+        update.bean(bean).notNull(updateNotNull).optimisticLock(optimisticLock).filterFields(filterColumns).where(wrapper);
         return sqliteTemplate.update(SqlBeanProvider.updateSql(getSqlBeanDB(), clazz, update, false));
     }
 
