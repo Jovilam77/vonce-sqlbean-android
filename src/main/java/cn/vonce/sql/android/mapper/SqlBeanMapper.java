@@ -5,6 +5,7 @@ import android.database.Cursor;
 import cn.vonce.sql.bean.ColumnInfo;
 import cn.vonce.sql.bean.TableInfo;
 import cn.vonce.sql.mapper.BaseMapper;
+import cn.vonce.sql.mapper.ResultSetDelegate;
 import cn.vonce.sql.uitls.DateUtil;
 import cn.vonce.sql.uitls.SqlBeanUtil;
 import cn.vonce.sql.uitls.StringUtil;
@@ -19,7 +20,7 @@ import java.util.Map;
  *
  * @author Jovi
  */
-public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
+public class SqlBeanMapper<T> extends BaseMapper<Cursor> implements RowMapper<T> {
 
     public Class<?> clazz;
     public Class<?> returnType;
@@ -30,32 +31,32 @@ public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
     }
 
     @Override
-    public List<String> getColumnNameList(AutoCloseable baseResult) {
-        Cursor cursor = (Cursor) baseResult;
+    public List<String> getColumnNameList(ResultSetDelegate<Cursor> resultSetDelegate) {
+        Cursor cursor = resultSetDelegate.getDelegate();
         return Arrays.asList(cursor.getColumnNames());
     }
 
     @Override
-    public T mapRow(Cursor cursor, int index) {
+    public T mapRow(ResultSetDelegate<Cursor> resultSetDelegate, int index) {
         Object object = null;
-        if (cursor.moveToNext()) {
+        if (resultSetDelegate.getDelegate().moveToNext()) {
             if (returnType.getName().equals(ColumnInfo.class.getName()) || returnType.getName().equals(TableInfo.class.getName())) {
-                return (T) beanHandleResultSet(returnType, cursor, getColumnNameList(cursor));
+                return (T) beanHandleResultSet(returnType, resultSetDelegate, getColumnNameList(resultSetDelegate));
             }
             if (SqlBeanUtil.isBaseType(returnType)) {
-                return (T) baseHandleResultSet(cursor);
+                return (T) baseHandleResultSet(resultSetDelegate);
             }
             if (SqlBeanUtil.isMap(returnType)) {
-                return (T) mapHandleResultSet(cursor);
+                return (T) mapHandleResultSet(resultSetDelegate);
             }
-            return (T) beanHandleResultSet(returnType, cursor, getColumnNameList(cursor));
+            return (T) beanHandleResultSet(returnType, resultSetDelegate, getColumnNameList(resultSetDelegate));
         }
         return (T) object;
     }
 
     @Override
-    public Object baseHandleResultSet(AutoCloseable baseResult) {
-        Cursor cursor = (Cursor) baseResult;
+    public Object baseHandleResultSet(ResultSetDelegate<Cursor> resultSetDelegate) {
+        Cursor cursor = resultSetDelegate.getDelegate();
         Object value;
         value = getValue(cursor.getType(0), 0, cursor);
         if (value != null && !value.getClass().getName().equals(returnType.getName())) {
@@ -68,8 +69,8 @@ public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
     }
 
     @Override
-    public Object mapHandleResultSet(AutoCloseable baseResult) {
-        Cursor cursor = (Cursor) baseResult;
+    public Object mapHandleResultSet(ResultSetDelegate<Cursor> resultSetDelegate) {
+        Cursor cursor = resultSetDelegate.getDelegate();
         Map<String, Object> map = new HashMap<>();
         for (int i = 1; i <= cursor.getColumnCount(); i++) {
             Object value = getValue(cursor.getType(i), i, cursor);
@@ -82,8 +83,8 @@ public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
     }
 
     @Override
-    public Object getValue(String fieldType, String fieldName, AutoCloseable baseResult) {
-        Cursor cursor = (Cursor) baseResult;
+    public Object getValue(String fieldType, String fieldName, ResultSetDelegate<Cursor> resultSetDelegate) {
+        Cursor cursor = resultSetDelegate.getDelegate();
         Object value = null;
         int index = cursor.getColumnIndex(fieldName);
         if (index == -1) {
@@ -165,7 +166,7 @@ public class SqlBeanMapper<T> extends BaseMapper implements RowMapper<T> {
     }
 
     @Override
-    public Object getValue(String jdbcType, int index, AutoCloseable baseResult) {
+    public Object getValue(String jdbcType, int index, ResultSetDelegate<Cursor> resultSetDelegate) {
         return null;
     }
 

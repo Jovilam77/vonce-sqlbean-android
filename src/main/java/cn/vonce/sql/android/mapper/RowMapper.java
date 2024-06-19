@@ -1,6 +1,7 @@
 package cn.vonce.sql.android.mapper;
 
 import android.database.Cursor;
+import cn.vonce.sql.mapper.ResultSetDelegate;
 
 /**
  * 行数据映射
@@ -10,6 +11,6 @@ import android.database.Cursor;
  */
 public interface RowMapper<T> {
 
-    T mapRow(Cursor cursor, int index);
+    T mapRow(ResultSetDelegate<Cursor> resultSetDelegate, int index);
 
 }
