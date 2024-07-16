@@ -94,7 +94,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, DbManag
 
     @Override
     public List<TableInfo> getTableList(String tableName) {
-        return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), null, null), new SqlBeanMapper<TableInfo>(clazz, TableInfo.class));
+        return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), null, tableName), new SqlBeanMapper<TableInfo>(clazz, TableInfo.class));
     }
 
     @Override
@@ -109,7 +109,7 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, DbManag
 
     @Override
     public List<ColumnInfo> getColumnInfoList(String tableName) {
-        return sqliteTemplate.query(SqlBeanProvider.selectTableListSql(getSqlBeanDB(), null, null), new SqlBeanMapper<ColumnInfo>(clazz, ColumnInfo.class));
+        return sqliteTemplate.query(SqlBeanProvider.selectColumnListSql(getSqlBeanDB(), null, tableName), new SqlBeanMapper<ColumnInfo>(clazz, ColumnInfo.class));
     }
 
     @Override
@@ -190,8 +190,8 @@ public class SqlBeanServiceImpl<T, ID> implements SqlBeanService<T, ID>, DbManag
     }
 
     @Override
-    public int alter(Table table, List<ColumnInfo> columnInfoList) {
-        List<String> sqlList = SqlBeanProvider.buildAlterSql(getSqlBeanDB(), clazz, columnInfoList);
+    public int alter(Class clazz, List<ColumnInfo> columnInfoList) {
+        List<String> sqlList = SqlBeanProvider.buildAlterSql(getSqlBeanDB(), clazz != null ? clazz : this.clazz, columnInfoList);
         int count = 0;
         if (sqlList != null && sqlList.size() > 0) {
             for (String sql : sqlList) {
