@@ -1,8 +1,13 @@
 package cn.vonce.sql.android.helper;
 
 import android.content.Context;
+import android.util.Log;
+import cn.vonce.sql.android.util.PackageUtil;
+import cn.vonce.sql.annotation.SqlTable;
+import cn.vonce.sql.bean.Table;
 import cn.vonce.sql.uitls.SqlBeanUtil;
 
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -88,11 +93,37 @@ public class SQLiteHelper {
         if (sqlBeanHelper == null) {
             if (databaseHelper == null) {
                 databaseHelper = new DatabaseHelper(clazz, context, name, null, version);
+                this.initSqlBeanHelper(clazz);
             }
-            sqlBeanHelper = new SqlBeanHelper<>(clazz, context, databaseHelper);
-            sqlBeanHelperMap.put(clazz, sqlBeanHelper);
+            sqlBeanHelper = sqlBeanHelperMap.get(clazz);
+            if (sqlBeanHelper == null) {
+                sqlBeanHelper = new SqlBeanHelper<>(clazz, databaseHelper);
+                sqlBeanHelperMap.put(clazz, sqlBeanHelper);
+            }
         }
         return sqlBeanHelper;
+    }
+
+    private void initSqlBeanHelper(Class beanClazz) {
+        new Thread(() -> {
+            List<String> classNames = PackageUtil.getClasses(context, beanClazz.getPackage().getName());
+            try {
+                for (String className : classNames) {
+                    Class<?> clazz = Class.forName(className);
+                    SqlBeanHelper sqlBeanHelper = new SqlBeanHelper<>(clazz, databaseHelper);
+                    sqlBeanHelperMap.put(clazz, sqlBeanHelper);
+                    SqlTable sqlTable = SqlBeanUtil.getSqlTable(clazz);
+                    //更新表结构
+                    if (sqlTable != null && sqlTable.autoAlter()) {
+                        Table table = SqlBeanUtil.getTable(clazz);
+                        sqlBeanHelper.alter(clazz, sqlBeanHelper.getColumnInfoList(table.getName()));
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                Log.e("sqlbean", e.getMessage(), e);
+            }
+        }).start();
     }
 
 }

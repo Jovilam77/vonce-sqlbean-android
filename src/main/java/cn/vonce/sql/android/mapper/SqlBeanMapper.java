@@ -72,7 +72,7 @@ public class SqlBeanMapper<T> extends BaseMapper<Cursor> implements RowMapper<T>
     public Object mapHandleResultSet(ResultSetDelegate<Cursor> resultSetDelegate) {
         Cursor cursor = resultSetDelegate.getDelegate();
         Map<String, Object> map = new HashMap<>();
-        for (int i = 1; i <= cursor.getColumnCount(); i++) {
+        for (int i = 1; i < cursor.getColumnCount(); i++) {
             Object value = getValue(cursor.getType(i), i, cursor);
             if (value == null || value.equals("null")) {
                 value = getDefaultValueByColumnType(cursor.getType(i));
