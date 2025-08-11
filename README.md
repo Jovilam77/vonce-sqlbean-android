@@ -8,14 +8,14 @@
 
 ###### 💻环境: Android 4.0+
 
-###### Sqlbean-Core与Java-Spring版请移步这里👉 [gitee](https://gitee.com/iJovi/vonce-sqlbean "vonce-sqlbean"), [github](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")
+## 本项目已合并到 Sqlbean主项目中一起维护更新 [Gitee](https://gitee.com/iJovi/vonce-sqlbean "vonce-sqlbean"), [Github](https://github.com/Jovilam77/vonce-sqlbean "vonce-sqlbean")（请点击查看）
 
 #### 简单上手
 
 ###### 1.引入Gradle依赖
 
-	implementation 'cn.vonce:vonce-sqlbean-android:1.2.0-beta19'
-	annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.2.0-beta19'
+	implementation 'cn.vonce:vonce-sqlbean-android:1.7.0'
+    annotationProcessor 'cn.vonce:vonce-sqlbean-android:1.7.0'
 
 ###### 2.标注实体类，实体类与表字段映射
 
